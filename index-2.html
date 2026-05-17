@@ -706,15 +706,21 @@ const VAJE=[
     title:'Tapkanje pod očmi',
     desc:'Nežno tapkanje s prstancem od notranjega kotička navzven. Spodbudi cirkulacijo in zmanjša podočnjake.',
     tip:'💡 Zjutraj pred kremo — hladni prsti okrepijo učinek.',
-    avatarMsg:'Sledite mojim navodilom korak za korakom.',
-    serije:3, sekunde:30,
-    doneMsg:'Naredili ste 3 serije tapkanja. Vaša cirkulacija je aktivirana!',
+    avatarMsg:'Pripravi se — sledite korak za korakom.',
+    serije:3,
+    doneMsg:'Naredile ste 3 serije tapkanja. Cirkulacija je aktivirana!',
     koraki:[
       'Nanesite kapljico lahke kreme ali olja pod oči.',
-      'S konicama prstancev začnite pri notranjem kotičku očesa.',
+      'S konicama prstancev se postavite pri notranjem kotičku očesa.',
       'Nežno tapkajte navzven vzdolž kosti pod očmi do senčnice.',
-      'Pritisk kot tipkanje po tipkovnici — lahkoten in ritmičen.',
-      'Nadaljujte 30 sekund, nato ponovite serijo.'
+      'Pritisk lahkoten — kot tipkanje po tipkovnici. Tapkajte 30 sekund.',
+    ],
+    korakSec:[0, 5, 30, 0],
+    korakMsg:[
+      'Najprej nanesite kremo ali olje — to zaščiti kožo.',
+      'Prstanec — to je prstan brez prstana — postavite k notranjemu kotičku.',
+      'Tapkajte ritmično navzven... odlično, nadaljujte!',
+      'Serija je zaključena! Spočijte roke in se pripravite na naslednjo.'
     ]
   },
   {
@@ -723,39 +729,87 @@ const VAJE=[
     desc:'Drenažna masaža vzdolž kosti obraza. Odvede zastalo tekočino in zmanjša jutranjo oteklost.',
     tip:'💡 Vedno masirajtee navzdol — limfa se drenira k vratu.',
     avatarMsg:'Dihajte globoko med masažo.',
-    serije:2, sekunde:45,
+    serije:2,
     doneMsg:'Limfna drenaža zaključena. Oteklina se bo zmanjšala v 10 minutah.',
     koraki:[
       'Prstanec postavite na notranji kotič obrvi.',
-      'Nežno drsite navzven po obrvi do senčnice.',
+      'Nežno drsite navzven po obrvi do senčnice — 15 sekund.',
       'Pri senčnici naredite 3 majhne krožne gibe.',
       'Spustite vzdolž kosti ličnice navzven.',
-      'Na koncu potegnite navzdol po vratu.',
-      'Ponovite 5-krat na vsaki strani.'
+      'Potegnite navzdol po vratu — limfa se drenira tja.',
+    ],
+    korakSec:[4, 15, 8, 8, 6],
+    korakMsg:[
+      'Prstanec nežno na notranji kotič obrvi — ne pritiskajte pretrdo.',
+      'Drsite počasi... čutite rahlo napetost pod kožo.',
+      'Tri krožne gibe pri senčnici — počasi in z nadzorom.',
+      'Spuščajte se vzdolž kosti ličnice navzdol...',
+      'Navzdol po vratu — tu se limfa odteče. Odlično!'
     ]
   },
   {
     tag:'Lifting oči · Brezplačno',
     title:'Vaja "V" za obrvi',
     desc:'Dvigne veke in zmanjša utrujeni pogled. Krepi mišico orbicularis oculi.',
-    tip:'💡 Čutiti morate napetost — to je znak da delate prav.',
+    tip:'💡 Čutiti morate napetost pri vekah — to je znak da delate prav.',
     avatarMsg:'Počasi in z nadzorom — ne hitite.',
-    serije:3, sekunde:20,
+    serije:3,
     doneMsg:'Mišica orbicularis oculi je aktivirana. Nadaljujte vsak dan!',
     koraki:[
-      'Kazalca in sredinec postavite v obliki V na kotičke oči.',
-      'Nežno pritiskajte navzgor in navzven.',
-      'Poglejte navzgor — oči ostanejo odprte.',
-      'Počasi mežikajte spodnje veke navzgor 10-krat.',
-      'Počivajte 5 sekund, nato ponovite serijo.'
+      'Kazalca in sredinec postavite v obliki V na zunanje kotičke oči.',
+      'Nežno pritiskajte navzgor in navzven — 5 sekund.',
+      'Poglejte navzgor, oči ostanejo odprte.',
+      'Počasi mežikajte spodnje veke navzgor — 10-krat počasi.',
+      'Sprostite in počivajte 5 sekund.',
+    ],
+    korakSec:[5, 5, 3, 15, 5],
+    korakMsg:[
+      'Prste v obliko V — pritisk naj bo nežen, ne boleč.',
+      'Čutite rahlo napetost v kotičkih oči? Odlično!',
+      'Pogled navzgor — mišica se aktivira.',
+      'Mežikajte počasi navzgor... počasi... odlično!',
+      'Sprostite se — pripravite na naslednjo serijo.'
     ]
   }
 ];
 
-let curVaja=0, curSerija=0, timerSec=0, timerTotal=0, timerRunning=false, timerInterval=null;
+// ── SOUND ──
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+function getAudio(){ if(!audioCtx) audioCtx=new AudioCtx(); return audioCtx; }
+
+function beep(freq=520, dur=0.12, vol=0.25, type='sine'){
+  try {
+    const ctx=getAudio();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type=type; osc.frequency.value=freq;
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+dur);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime+dur);
+  } catch(e){}
+}
+function beepStep(){ beep(660,0.08,0.18); }
+function beepSerija(){ beep(520,0.12,0.22); setTimeout(()=>beep(660,0.12,0.22),160); }
+function beepDone(){ beep(523,0.15,0.25); setTimeout(()=>beep(659,0.15,0.25),180); setTimeout(()=>beep(784,0.3,0.28),360); }
+
+// ── STATE ──
+let curVaja=0, curSerija=0, curKorak=0, timerSec=0, timerTotal=0, timerRunning=false, timerInterval=null;
+
+// Vsak korak ima lasten čas v sekundah (0 = takoj naprej brez timerja)
+// Format: { text, sec }  — sec=0 pomeni "prep" korak brez odštevanja
+function buildKoraki(v){
+  // Pripravi korake — zadnji korak vsake vaje je "tapkaj X sekund"
+  // porazdelimo sekunde samo na korake, ki imajo čas
+  return v.koraki.map((k,i)=>({
+    text: k,
+    sec: k.step_sec || v.korakSec[i] || 0
+  }));
+}
 
 function openVaja(idx){
-  curVaja=idx; curSerija=0; timerRunning=false;
+  curVaja=idx; curSerija=0; curKorak=0; timerRunning=false;
   clearInterval(timerInterval);
   const v=VAJE[idx];
   document.getElementById('voTag').textContent=v.tag;
@@ -765,10 +819,10 @@ function openVaja(idx){
   document.getElementById('voAvatarMsg').textContent=v.avatarMsg;
   document.getElementById('voDone').style.display='none';
   document.getElementById('voKoraki').style.display='flex';
-  renderKoraki(v,-1);
-  setTimer(v.sekunde);
-  updateRound(v);
   document.getElementById('timerPlayBtn').textContent='▶ Začni';
+  renderKoraki(v, 0);
+  loadKorak(v, 0);
+  updateRound(v);
   document.getElementById('vajaOverlay').style.display='block';
   document.body.style.overflow='hidden';
   window.scrollTo(0,0);
@@ -780,18 +834,40 @@ function closeVaja(){
   document.body.style.overflow='';
 }
 
-function renderKoraki(v,activeIdx){
+// Naloži korak — nastavi timer glede na čas tega koraka
+function loadKorak(v, ki){
+  curKorak=ki;
+  const k=v.koraki[ki];
+  const sec=v.korakSec[ki];
+  renderKoraki(v, ki);
+  // Posodobi avatar sporočilo
+  document.getElementById('voAvatarMsg').textContent = v.korakMsg[ki] || v.avatarMsg;
+  // Timer
+  if(sec>0){
+    timerSec=sec; timerTotal=sec;
+    updateTimerDisplay();
+    document.getElementById('timerLabel').textContent=k.length>40?k.substring(0,38)+'…':k;
+  } else {
+    // korak brez timerja — pokaži "→" in nadaljuj
+    timerSec=0; timerTotal=0;
+    document.getElementById('timerNum').textContent='→';
+    document.getElementById('timerFill').style.width='100%';
+    document.getElementById('timerLabel').textContent='Preberi in nadaljuj';
+  }
+}
+
+function renderKoraki(v, activeIdx){
   const wrap=document.getElementById('voKoraki');
   wrap.innerHTML=v.koraki.map((k,i)=>`
     <div class="korak-item ${i===activeIdx?'active-step':i<activeIdx?'done-step':''}">
       <div class="korak-n">${i<activeIdx?'✓':(i+1)}</div>
       <div class="korak-t">${k}</div>
     </div>`).join('');
-}
-
-function setTimer(sec){
-  timerSec=sec; timerTotal=sec;
-  updateTimerDisplay();
+  // Scroll aktivni korak v view
+  setTimeout(()=>{
+    const active=wrap.querySelector('.active-step');
+    if(active) active.scrollIntoView({block:'nearest',behavior:'smooth'});
+  },80);
 }
 
 function updateTimerDisplay(){
@@ -803,47 +879,81 @@ function updateTimerDisplay(){
 
 function updateRound(v){
   document.getElementById('timerRound').textContent='Serija '+(curSerija+1)+' / '+v.serije;
-  document.getElementById('timerLabel').textContent='Trajanje: '+v.sekunde+' sek';
 }
 
 function toggleTimer(){
+  const v=VAJE[curVaja];
   if(timerRunning){
     clearInterval(timerInterval); timerRunning=false;
     document.getElementById('timerPlayBtn').textContent='▶ Nadaljuj';
+    return;
+  }
+  // Korak brez timerja — samo pojdi naprej
+  if(v.korakSec[curKorak]===0){
+    advanceKorak(v); return;
+  }
+  timerRunning=true;
+  document.getElementById('timerPlayBtn').textContent='⏸ Pavza';
+  timerInterval=setInterval(()=>{
+    if(timerSec<=0){
+      clearInterval(timerInterval); timerRunning=false;
+      beepStep();
+      advanceKorak(v);
+    } else {
+      timerSec--;
+      updateTimerDisplay();
+      // Zadnji 3 sekunde — beep
+      if(timerSec<=3 && timerSec>0) beep(440,0.06,0.1);
+    }
+  },1000);
+}
+
+function advanceKorak(v){
+  const nextK=curKorak+1;
+  if(nextK>=v.koraki.length){
+    // Serija končana
+    curSerija++;
+    if(curSerija>=v.serije){
+      finishVaja(v);
+    } else {
+      beepSerija();
+      curKorak=0;
+      updateRound(v);
+      loadKorak(v,0);
+      document.getElementById('timerPlayBtn').textContent='▶ Začni';
+      document.getElementById('voAvatarMsg').textContent='Odlično! '+curSerija+'. serija končana — pripravi se na naslednjo. 💪';
+    }
   } else {
-    timerRunning=true;
-    document.getElementById('timerPlayBtn').textContent='⏸ Pavza';
-    const v=VAJE[curVaja];
-    const totalKoraki=v.koraki.length;
-    timerInterval=setInterval(()=>{
-      if(timerSec<=0){
-        clearInterval(timerInterval); timerRunning=false;
-        curSerija++;
-        if(curSerija>=v.serije){
-          finishVaja(v);
-        } else {
-          setTimer(v.sekunde);
-          updateRound(v);
-          renderKoraki(v,-1);
-          document.getElementById('timerPlayBtn').textContent='▶ Začni';
-          document.getElementById('voAvatarMsg').textContent='Odlično! Serija '+(curSerija)+' končana. Pripravi se na naslednjo.';
-        }
-      } else {
-        timerSec--;
-        updateTimerDisplay();
-        // highlight current step
-        const stepIdx=Math.floor((1-(timerSec/timerTotal))*totalKoraki);
-        renderKoraki(v,Math.min(stepIdx,totalKoraki-1));
-      }
-    },1000);
+    beepStep();
+    loadKorak(v, nextK);
+    // Avtomatsko nadaljuj timer če korak ima čas
+    if(v.korakSec[nextK]>0 && timerRunning===false){
+      // Kratka pavza med koraki
+      setTimeout(()=>{
+        document.getElementById('timerPlayBtn').textContent='⏸ Pavza';
+        timerRunning=true;
+        timerInterval=setInterval(()=>{
+          if(timerSec<=0){
+            clearInterval(timerInterval); timerRunning=false;
+            beepStep();
+            advanceKorak(v);
+          } else {
+            timerSec--;
+            updateTimerDisplay();
+            if(timerSec<=3 && timerSec>0) beep(440,0.06,0.1);
+          }
+        },1000);
+      },800);
+    }
   }
 }
 
 function resetTimer(){
   clearInterval(timerInterval); timerRunning=false;
   const v=VAJE[curVaja];
-  setTimer(v.sekunde);
-  renderKoraki(v,-1);
+  curKorak=0; curSerija=0;
+  updateRound(v);
+  loadKorak(v,0);
   document.getElementById('timerPlayBtn').textContent='▶ Začni';
   document.getElementById('voAvatarMsg').textContent=v.avatarMsg;
 }
@@ -853,14 +963,15 @@ function nextRound(){
   const v=VAJE[curVaja];
   curSerija++;
   if(curSerija>=v.serije){ finishVaja(v); return; }
-  setTimer(v.sekunde);
+  curKorak=0;
   updateRound(v);
-  renderKoraki(v,-1);
+  loadKorak(v,0);
   document.getElementById('timerPlayBtn').textContent='▶ Začni';
   document.getElementById('voAvatarMsg').textContent='Serija '+(curSerija+1)+' — pripravi se!';
 }
 
 function finishVaja(v){
+  beepDone();
   document.getElementById('voDone').style.display='block';
   document.getElementById('voKoraki').style.display='none';
   document.getElementById('voDoneMsg').textContent=v.doneMsg;
