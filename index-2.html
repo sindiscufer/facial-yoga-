@@ -774,25 +774,32 @@ const VAJE=[
 ];
 
 // ── SOUND ──
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
-function getAudio(){ if(!audioCtx) audioCtx=new AudioCtx(); return audioCtx; }
-
-function beep(freq=520, dur=0.12, vol=0.25, type='sine'){
-  try {
-    const ctx=getAudio();
-    const osc=ctx.createOscillator();
-    const gain=ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.type=type; osc.frequency.value=freq;
-    gain.gain.setValueAtTime(vol, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+dur);
-    osc.start(ctx.currentTime); osc.stop(ctx.currentTime+dur);
-  } catch(e){}
+function initAudio(){
+  if(!audioCtx){
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return;
+    audioCtx=new AC();
+  }
+  if(audioCtx.state==='suspended') audioCtx.resume();
 }
-function beepStep(){ beep(660,0.08,0.18); }
-function beepSerija(){ beep(520,0.12,0.22); setTimeout(()=>beep(660,0.12,0.22),160); }
-function beepDone(){ beep(523,0.15,0.25); setTimeout(()=>beep(659,0.15,0.25),180); setTimeout(()=>beep(784,0.3,0.28),360); }
+function beep(freq=520,dur=0.15,vol=0.3,type='sine'){
+  try{
+    if(!audioCtx) return;
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    const osc=audioCtx.createOscillator();
+    const gain=audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type=type; osc.frequency.setValueAtTime(freq,audioCtx.currentTime);
+    gain.gain.setValueAtTime(vol,audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);
+    osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime+dur+0.05);
+  }catch(e){}
+}
+function beepStep(){ beep(700,0.1,0.3); }
+function beepSerija(){ beep(520,0.13,0.3); setTimeout(()=>beep(660,0.13,0.3),170); }
+function beepDone(){ beep(523,0.15,0.3); setTimeout(()=>beep(659,0.15,0.3),190); setTimeout(()=>beep(784,0.3,0.32),390); }
+function beepTick(){ beep(440,0.07,0.15); }
 
 // ── STATE ──
 let curVaja=0, curSerija=0, curKorak=0, timerSec=0, timerTotal=0, timerRunning=false, timerInterval=null;
@@ -809,6 +816,7 @@ function buildKoraki(v){
 }
 
 function openVaja(idx){
+  initAudio();
   curVaja=idx; curSerija=0; curKorak=0; timerRunning=false;
   clearInterval(timerInterval);
   const v=VAJE[idx];
@@ -882,6 +890,7 @@ function updateRound(v){
 }
 
 function toggleTimer(){
+  initAudio();
   const v=VAJE[curVaja];
   if(timerRunning){
     clearInterval(timerInterval); timerRunning=false;
@@ -902,8 +911,7 @@ function toggleTimer(){
     } else {
       timerSec--;
       updateTimerDisplay();
-      // Zadnji 3 sekunde — beep
-      if(timerSec<=3 && timerSec>0) beep(440,0.06,0.1);
+      if(timerSec<=3 && timerSec>0) beepTick();
     }
   },1000);
 }
@@ -911,7 +919,6 @@ function toggleTimer(){
 function advanceKorak(v){
   const nextK=curKorak+1;
   if(nextK>=v.koraki.length){
-    // Serija končana
     curSerija++;
     if(curSerija>=v.serije){
       finishVaja(v);
@@ -926,9 +933,7 @@ function advanceKorak(v){
   } else {
     beepStep();
     loadKorak(v, nextK);
-    // Avtomatsko nadaljuj timer če korak ima čas
     if(v.korakSec[nextK]>0 && timerRunning===false){
-      // Kratka pavza med koraki
       setTimeout(()=>{
         document.getElementById('timerPlayBtn').textContent='⏸ Pavza';
         timerRunning=true;
@@ -940,7 +945,7 @@ function advanceKorak(v){
           } else {
             timerSec--;
             updateTimerDisplay();
-            if(timerSec<=3 && timerSec>0) beep(440,0.06,0.1);
+            if(timerSec<=3 && timerSec>0) beepTick();
           }
         },1000);
       },800);
