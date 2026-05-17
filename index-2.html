@@ -349,26 +349,26 @@ footer p{font-size:0.78rem;color:rgba(255,255,255,0.38);}
     </div>
   </div>
   <div class="vaje-grid">
-    <div class="vaja-card fade-in">
+    <div class="vaja-card fade-in" onclick="openVaja(0)" style="cursor:pointer;">
       <div class="vaja-icon icon-roza"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><ellipse cx="7" cy="10" rx="4" ry="3" fill="none" stroke="#E8829A" stroke-width="1.8"/><ellipse cx="17" cy="10" rx="4" ry="3" fill="none" stroke="#E8829A" stroke-width="1.8"/><path d="M3 14 Q12 18 21 14" fill="none" stroke="#E8829A" stroke-width="1.5" stroke-linecap="round"/></svg></div>
       <span class="vaja-badge badge-free">Brezplačno</span>
       <h3>Tapkanje pod očmi</h3>
       <p>Nežno tapkanje s prstancem od notranjega kotička navzven. Spodbudi cirkulacijo in zmanjša podočnjake.</p>
-      <div class="vaja-meta"><span>⏱ 3 × 30 sek</span><span>👤 Začetniki</span></div>
+      <div class="vaja-meta"><span>⏱ 3 × 30 sek</span><span>▶ Začni vajo</span></div>
     </div>
-    <div class="vaja-card fade-in">
+    <div class="vaja-card fade-in" onclick="openVaja(1)" style="cursor:pointer;">
       <div class="vaja-icon icon-roza"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 12 Q8 6 12 8 Q16 6 20 12 Q16 18 12 16 Q8 18 4 12Z" fill="none" stroke="#E8829A" stroke-width="1.8"/><circle cx="12" cy="12" r="2" fill="#E8829A" opacity="0.5"/></svg></div>
       <span class="vaja-badge badge-free">Brezplačno</span>
       <h3>Limfna drenaža oči</h3>
       <p>Drenažna masaža vzdolž kosti obraza. Odvede zastalo tekočino in zmanjša jutranjo oteklost.</p>
-      <div class="vaja-meta"><span>⏱ 2 × 45 sek</span><span>👤 Začetniki</span></div>
+      <div class="vaja-meta"><span>⏱ 2 × 45 sek</span><span>▶ Začni vajo</span></div>
     </div>
-    <div class="vaja-card fade-in">
+    <div class="vaja-card fade-in" onclick="openVaja(2)" style="cursor:pointer;">
       <div class="vaja-icon icon-roza"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 15 L12 8 L17 15" fill="none" stroke="#E8829A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 18 Q12 21 19 18" fill="none" stroke="#E8829A" stroke-width="1.5" stroke-linecap="round"/></svg></div>
       <span class="vaja-badge badge-free">Brezplačno</span>
       <h3>Vaja "V" za obrvi</h3>
       <p>Dvigne veke in zmanjša utrujeni pogled. Krepi mišico orbicularis oculi za trdnost kože.</p>
-      <div class="vaja-meta"><span>⏱ 3 × 10 pon.</span><span>👤 Začetniki</span></div>
+      <div class="vaja-meta"><span>⏱ 3 × 10 pon.</span><span>▶ Začni vajo</span></div>
     </div>
     <div class="vaja-card premium-card fade-in">
       <div class="vaja-icon icon-zlata"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 17 Q12 10 19 17" fill="none" stroke="#C9923A" stroke-width="2" stroke-linecap="round"/><path d="M7 13 Q12 8 17 13" fill="none" stroke="#C9923A" stroke-width="1.5" stroke-linecap="round"/></svg></div>
@@ -536,7 +536,340 @@ footer p{font-size:0.78rem;color:rgba(255,255,255,0.38);}
   <div class="footer-links"><a href="#">Zasebnost</a><a href="#">Pogoji</a><a href="#">Kontakt</a></div>
 </footer>
 
+<!-- VAJA OVERLAY -->
+<div id="vajaOverlay" style="display:none;position:fixed;inset:0;z-index:1000;background:var(--krem);overflow-y:auto;">
+  <style>
+  .vo-nav{position:sticky;top:0;background:rgba(250,246,240,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(232,130,154,0.15);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;z-index:10;}
+  .vo-back{display:flex;align-items:center;gap:0.5rem;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--siva);cursor:pointer;transition:color 0.2s;padding:0;}
+  .vo-back:hover{color:var(--roza);}
+  .vo-logo{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--temna);}
+  .vo-logo span{color:var(--roza);font-style:italic;}
+  .vo-body{display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 60px);}
+  .vo-left{background:linear-gradient(160deg,var(--roza-bleda),var(--zlata-bleda));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;position:relative;overflow:hidden;}
+  .vo-avatar-area{width:100%;max-width:300px;position:relative;}
+  .vo-badge-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:var(--roza-mid);text-align:center;margin-top:1rem;}
+  .vo-tip{background:rgba(255,255,255,0.7);border-radius:1rem;padding:0.85rem 1.1rem;font-size:0.8rem;color:var(--siva);line-height:1.6;margin-top:1rem;max-width:300px;border:1px solid rgba(232,130,154,0.2);text-align:center;}
+  .vo-right{padding:3rem 3rem;display:flex;flex-direction:column;justify-content:center;}
+  .vo-tag{font-size:0.7rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--zlata);margin-bottom:0.5rem;}
+  .vo-title{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:300;color:var(--temna);line-height:1.15;margin-bottom:0.5rem;}
+  .vo-desc{font-size:0.9rem;color:var(--siva);line-height:1.7;margin-bottom:2rem;}
+
+  /* TIMER */
+  .timer-wrap{background:var(--bela);border-radius:1.5rem;padding:1.75rem;box-shadow:0 4px 24px rgba(232,130,154,0.1);margin-bottom:1.5rem;}
+  .timer-display{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+  .timer-num{font-family:'Cormorant Garamond',serif;font-size:4rem;font-weight:300;color:var(--temna);line-height:1;font-variant-numeric:tabular-nums;}
+  .timer-info{text-align:right;}
+  .timer-round{font-size:0.78rem;color:var(--siva);display:block;}
+  .timer-label{font-size:0.85rem;font-weight:500;color:var(--roza);display:block;margin-top:0.2rem;}
+  .timer-bar-bg{height:6px;background:var(--roza-bleda);border-radius:3px;overflow:hidden;margin-bottom:1.25rem;}
+  .timer-bar-fill{height:100%;background:linear-gradient(90deg,var(--roza),var(--zlata-svetla));border-radius:3px;transition:width 1s linear;width:100%;}
+  .timer-btns{display:flex;gap:0.75rem;}
+  .tbtn{flex:1;padding:0.75rem;border-radius:2rem;border:none;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:500;cursor:pointer;transition:all 0.2s;}
+  .tbtn-play{background:var(--roza);color:var(--bela);}
+  .tbtn-play:hover{background:var(--roza-mid);}
+  .tbtn-reset{background:var(--krem);color:var(--siva);border:1px solid rgba(44,26,30,0.12);}
+  .tbtn-reset:hover{border-color:var(--roza);color:var(--roza);}
+  .tbtn-next{background:var(--zlata-bleda);color:var(--zlata);border:1px solid rgba(201,146,58,0.2);}
+  .tbtn-next:hover{background:var(--zlata-svetla);}
+
+  /* KORAKI */
+  .koraki-wrap{display:flex;flex-direction:column;gap:0.6rem;}
+  .korak-item{display:flex;gap:0.85rem;align-items:flex-start;padding:0.85rem 1rem;border-radius:1rem;background:var(--bela);border:1px solid rgba(232,130,154,0.08);transition:all 0.3s;}
+  .korak-item.active-step{border-color:var(--roza);background:var(--roza-bleda);}
+  .korak-item.done-step{opacity:0.5;}
+  .korak-n{width:24px;height:24px;border-radius:50%;background:var(--roza-bleda);color:var(--roza);font-size:0.75rem;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all 0.3s;}
+  .korak-item.active-step .korak-n{background:var(--roza);color:var(--bela);}
+  .korak-item.done-step .korak-n{background:#E8F5EE;color:#1A7045;}
+  .korak-t{font-size:0.85rem;color:var(--temna);line-height:1.55;}
+  .korak-item.done-step .korak-t{text-decoration:line-through;color:var(--siva);}
+
+  .vo-done{text-align:center;padding:2rem;display:none;}
+  .vo-done h3{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--temna);margin-bottom:0.5rem;}
+  .vo-done p{font-size:0.9rem;color:var(--siva);margin-bottom:1.5rem;}
+  .vo-done-icon{font-size:3rem;margin-bottom:1rem;display:block;}
+
+  @media(max-width:800px){
+    .vo-body{grid-template-columns:1fr;}
+    .vo-left{min-height:300px;padding:2rem 1.5rem;}
+    .vo-right{padding:1.5rem;}
+    .vo-avatar-area{max-width:200px;}
+    .timer-num{font-size:3rem;}
+  }
+  </style>
+
+  <div class="vo-nav">
+    <button class="vo-back" onclick="closeVaja()">← Nazaj na vaje</button>
+    <div class="vo-logo">Lift <span>& Glow</span></div>
+    <div style="width:100px;"></div>
+  </div>
+
+  <div class="vo-body">
+    <!-- LEVO: avatar -->
+    <div class="vo-left">
+      <div class="vo-avatar-area">
+        <svg viewBox="0 0 320 460" xmlns="http://www.w3.org/2000/svg" style="width:100%;filter:drop-shadow(0 16px 40px rgba(232,130,154,0.2));">
+          <defs>
+            <radialGradient id="vbg" cx="50%" cy="40%" r="55%"><stop offset="0%" stop-color="#FDF0F4"/><stop offset="100%" stop-color="#FDF8EC"/></radialGradient>
+            <radialGradient id="vskin" cx="50%" cy="35%" r="60%"><stop offset="0%" stop-color="#FDDBC8"/><stop offset="100%" stop-color="#F5C0A0"/></radialGradient>
+            <radialGradient id="vhair" cx="50%" cy="20%" r="60%"><stop offset="0%" stop-color="#5C3820"/><stop offset="100%" stop-color="#3A2010"/></radialGradient>
+          </defs>
+          <ellipse cx="160" cy="235" rx="145" ry="215" fill="url(#vbg)"/>
+          <rect x="135" y="295" width="50" height="55" rx="8" fill="#F5C0A0"/>
+          <path d="M40 410 Q160 360 280 410 L280 460 L40 460 Z" fill="#F4C0D1"/>
+          <path d="M40 410 Q160 372 280 410" fill="none" stroke="#E8829A" stroke-width="1.5" opacity="0.5"/>
+          <ellipse cx="160" cy="220" rx="86" ry="103" fill="url(#vskin)"/>
+          <ellipse cx="160" cy="148" rx="88" ry="78" fill="url(#vhair)"/>
+          <path d="M74 182 Q54 270 74 330 Q94 290 104 252 Z" fill="#3A2010"/>
+          <path d="M246 182 Q266 270 246 330 Q226 290 216 252 Z" fill="#3A2010"/>
+          <ellipse cx="75" cy="227" rx="9" ry="12" fill="#F0B090"/>
+          <ellipse cx="245" cy="227" rx="9" ry="12" fill="#F0B090"/>
+          <circle cx="75" cy="239" r="4" fill="#E8829A" opacity="0.8"/>
+          <circle cx="245" cy="239" r="4" fill="#E8829A" opacity="0.8"/>
+          <path d="M118 186 Q132 179 146 183" fill="none" stroke="#5C3820" stroke-width="2.3" stroke-linecap="round"/>
+          <path d="M174 183 Q188 179 202 186" fill="none" stroke="#5C3820" stroke-width="2.3" stroke-linecap="round"/>
+          <ellipse cx="132" cy="203" rx="14" ry="10" fill="#fff"/>
+          <circle cx="134" cy="204" r="7" fill="#5C3820"/>
+          <circle cx="134" cy="204" r="4" fill="#2C1A0E"/>
+          <circle cx="137" cy="201" r="2" fill="#fff"/>
+          <path d="M118 199 Q132 192 146 199" fill="none" stroke="#5C3820" stroke-width="1.4" stroke-linecap="round"/>
+          <ellipse cx="188" cy="203" rx="14" ry="10" fill="#fff"/>
+          <circle cx="190" cy="204" r="7" fill="#5C3820"/>
+          <circle cx="190" cy="204" r="4" fill="#2C1A0E"/>
+          <circle cx="193" cy="201" r="2" fill="#fff"/>
+          <path d="M174 199 Q188 192 202 199" fill="none" stroke="#5C3820" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M155 212 Q152 235 149 242 Q156 248 160 246 Q164 248 171 242 Q168 235 165 212" fill="none" stroke="#D09070" stroke-width="1.4" stroke-linecap="round" opacity="0.6"/>
+          <!-- Animated smile -->
+          <path id="voMouth" d="M140 265 Q160 280 180 265" fill="none" stroke="#C06070" stroke-width="2.3" stroke-linecap="round"/>
+          <ellipse cx="112" cy="245" rx="17" ry="9" fill="#F4A0B0" opacity="0.32"/>
+          <ellipse cx="208" cy="245" rx="17" ry="9" fill="#F4A0B0" opacity="0.32"/>
+          <!-- Animated hand -->
+          <g id="voHand">
+            <path d="M62 298 Q76 274 90 260 Q98 255 102 262 Q108 250 114 258 Q120 246 126 255 Q132 262 128 272 Q120 282 110 288 Q100 298 88 308 Q74 316 62 308 Z" fill="#FDDBC8" stroke="#E0B090" stroke-width="0.8"/>
+            <line x1="102" y1="262" x2="95" y2="284" stroke="#D0A080" stroke-width="0.8" opacity="0.5"/>
+            <line x1="114" y1="258" x2="108" y2="281" stroke="#D0A080" stroke-width="0.8" opacity="0.5"/>
+            <line x1="126" y1="255" x2="121" y2="278" stroke="#D0A080" stroke-width="0.8" opacity="0.5"/>
+          </g>
+          <!-- Sparkles -->
+          <circle cx="96" cy="172" r="3" fill="#FAC775" opacity="0.8"><animate attributeName="opacity" values="0.8;0.2;0.8" dur="2.5s" repeatCount="indefinite"/></circle>
+          <circle cx="228" cy="158" r="2.5" fill="#F4C0D1" opacity="0.9"><animate attributeName="opacity" values="0.9;0.2;0.9" dur="3s" repeatCount="indefinite" begin="0.5s"/></circle>
+          <circle cx="248" cy="278" r="2" fill="#E8829A" opacity="0.7"><animate attributeName="opacity" values="0.7;0.1;0.7" dur="2s" repeatCount="indefinite" begin="1s"/></circle>
+          <!-- Animated massage arcs -->
+          <path d="M106 230 Q116 225 126 230" fill="none" stroke="#E8829A" stroke-width="2" stroke-linecap="round"><animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/></path>
+          <path d="M194 230 Q204 225 214 230" fill="none" stroke="#E8829A" stroke-width="2" stroke-linecap="round"><animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="0.5s"/></path>
+          <!-- Breathing animation on face -->
+          <ellipse cx="160" cy="220" rx="86" ry="103" fill="none" stroke="rgba(232,130,154,0.2)" stroke-width="3"><animate attributeName="ry" values="103;106;103" dur="4s" repeatCount="indefinite"/></ellipse>
+          <rect x="76" y="428" width="168" height="26" rx="13" fill="rgba(232,130,154,0.15)" stroke="rgba(232,130,154,0.3)" stroke-width="1"/>
+          <text x="160" y="445" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="12" fill="#C04070" font-style="italic">tvoja AI inštruktorica</text>
+        </svg>
+      </div>
+      <div class="vo-badge-title" id="voAvatarMsg">Pripravi se — začenjamo!</div>
+      <div class="vo-tip" id="voTip"></div>
+    </div>
+
+    <!-- DESNO: timer + koraki -->
+    <div class="vo-right">
+      <div class="vo-tag" id="voTag"></div>
+      <h1 class="vo-title" id="voTitle"></h1>
+      <p class="vo-desc" id="voDesc"></p>
+
+      <div class="timer-wrap">
+        <div class="timer-display">
+          <div class="timer-num" id="timerNum">0:30</div>
+          <div class="timer-info">
+            <span class="timer-round" id="timerRound">Serija 1 / 3</span>
+            <span class="timer-label" id="timerLabel">Pripravi se</span>
+          </div>
+        </div>
+        <div class="timer-bar-bg"><div class="timer-bar-fill" id="timerFill"></div></div>
+        <div class="timer-btns">
+          <button class="tbtn tbtn-play" id="timerPlayBtn" onclick="toggleTimer()">▶ Začni</button>
+          <button class="tbtn tbtn-reset" onclick="resetTimer()">↺ Ponovi</button>
+          <button class="tbtn tbtn-next" onclick="nextRound()">→ Naprej</button>
+        </div>
+      </div>
+
+      <div class="koraki-wrap" id="voKoraki"></div>
+      <div class="vo-done" id="voDone">
+        <span class="vo-done-icon">✨</span>
+        <h3>Odlično!</h3>
+        <p id="voDoneMsg"></p>
+        <button class="tbtn tbtn-play" style="max-width:200px;margin:0 auto;" onclick="closeVaja()">← Nazaj na vaje</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
+const VAJE=[
+  {
+    tag:'Področje oči · Brezplačno',
+    title:'Tapkanje pod očmi',
+    desc:'Nežno tapkanje s prstancem od notranjega kotička navzven. Spodbudi cirkulacijo in zmanjša podočnjake.',
+    tip:'💡 Zjutraj pred kremo — hladni prsti okrepijo učinek.',
+    avatarMsg:'Sledite mojim navodilom korak za korakom.',
+    serije:3, sekunde:30,
+    doneMsg:'Naredili ste 3 serije tapkanja. Vaša cirkulacija je aktivirana!',
+    koraki:[
+      'Nanesite kapljico lahke kreme ali olja pod oči.',
+      'S konicama prstancev začnite pri notranjem kotičku očesa.',
+      'Nežno tapkajte navzven vzdolž kosti pod očmi do senčnice.',
+      'Pritisk kot tipkanje po tipkovnici — lahkoten in ritmičen.',
+      'Nadaljujte 30 sekund, nato ponovite serijo.'
+    ]
+  },
+  {
+    tag:'Limfna drenaža · Brezplačno',
+    title:'Limfna drenaža oči',
+    desc:'Drenažna masaža vzdolž kosti obraza. Odvede zastalo tekočino in zmanjša jutranjo oteklost.',
+    tip:'💡 Vedno masirajtee navzdol — limfa se drenira k vratu.',
+    avatarMsg:'Dihajte globoko med masažo.',
+    serije:2, sekunde:45,
+    doneMsg:'Limfna drenaža zaključena. Oteklina se bo zmanjšala v 10 minutah.',
+    koraki:[
+      'Prstanec postavite na notranji kotič obrvi.',
+      'Nežno drsite navzven po obrvi do senčnice.',
+      'Pri senčnici naredite 3 majhne krožne gibe.',
+      'Spustite vzdolž kosti ličnice navzven.',
+      'Na koncu potegnite navzdol po vratu.',
+      'Ponovite 5-krat na vsaki strani.'
+    ]
+  },
+  {
+    tag:'Lifting oči · Brezplačno',
+    title:'Vaja "V" za obrvi',
+    desc:'Dvigne veke in zmanjša utrujeni pogled. Krepi mišico orbicularis oculi.',
+    tip:'💡 Čutiti morate napetost — to je znak da delate prav.',
+    avatarMsg:'Počasi in z nadzorom — ne hitite.',
+    serije:3, sekunde:20,
+    doneMsg:'Mišica orbicularis oculi je aktivirana. Nadaljujte vsak dan!',
+    koraki:[
+      'Kazalca in sredinec postavite v obliki V na kotičke oči.',
+      'Nežno pritiskajte navzgor in navzven.',
+      'Poglejte navzgor — oči ostanejo odprte.',
+      'Počasi mežikajte spodnje veke navzgor 10-krat.',
+      'Počivajte 5 sekund, nato ponovite serijo.'
+    ]
+  }
+];
+
+let curVaja=0, curSerija=0, timerSec=0, timerTotal=0, timerRunning=false, timerInterval=null;
+
+function openVaja(idx){
+  curVaja=idx; curSerija=0; timerRunning=false;
+  clearInterval(timerInterval);
+  const v=VAJE[idx];
+  document.getElementById('voTag').textContent=v.tag;
+  document.getElementById('voTitle').textContent=v.title;
+  document.getElementById('voDesc').textContent=v.desc;
+  document.getElementById('voTip').textContent=v.tip;
+  document.getElementById('voAvatarMsg').textContent=v.avatarMsg;
+  document.getElementById('voDone').style.display='none';
+  document.getElementById('voKoraki').style.display='flex';
+  renderKoraki(v,-1);
+  setTimer(v.sekunde);
+  updateRound(v);
+  document.getElementById('timerPlayBtn').textContent='▶ Začni';
+  document.getElementById('vajaOverlay').style.display='block';
+  document.body.style.overflow='hidden';
+  window.scrollTo(0,0);
+}
+
+function closeVaja(){
+  clearInterval(timerInterval); timerRunning=false;
+  document.getElementById('vajaOverlay').style.display='none';
+  document.body.style.overflow='';
+}
+
+function renderKoraki(v,activeIdx){
+  const wrap=document.getElementById('voKoraki');
+  wrap.innerHTML=v.koraki.map((k,i)=>`
+    <div class="korak-item ${i===activeIdx?'active-step':i<activeIdx?'done-step':''}">
+      <div class="korak-n">${i<activeIdx?'✓':(i+1)}</div>
+      <div class="korak-t">${k}</div>
+    </div>`).join('');
+}
+
+function setTimer(sec){
+  timerSec=sec; timerTotal=sec;
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay(){
+  const m=Math.floor(timerSec/60), s=timerSec%60;
+  document.getElementById('timerNum').textContent=m+':'+(s<10?'0':'')+s;
+  const pct=timerTotal>0?(timerSec/timerTotal*100):0;
+  document.getElementById('timerFill').style.width=pct+'%';
+}
+
+function updateRound(v){
+  document.getElementById('timerRound').textContent='Serija '+(curSerija+1)+' / '+v.serije;
+  document.getElementById('timerLabel').textContent='Trajanje: '+v.sekunde+' sek';
+}
+
+function toggleTimer(){
+  if(timerRunning){
+    clearInterval(timerInterval); timerRunning=false;
+    document.getElementById('timerPlayBtn').textContent='▶ Nadaljuj';
+  } else {
+    timerRunning=true;
+    document.getElementById('timerPlayBtn').textContent='⏸ Pavza';
+    const v=VAJE[curVaja];
+    const totalKoraki=v.koraki.length;
+    timerInterval=setInterval(()=>{
+      if(timerSec<=0){
+        clearInterval(timerInterval); timerRunning=false;
+        curSerija++;
+        if(curSerija>=v.serije){
+          finishVaja(v);
+        } else {
+          setTimer(v.sekunde);
+          updateRound(v);
+          renderKoraki(v,-1);
+          document.getElementById('timerPlayBtn').textContent='▶ Začni';
+          document.getElementById('voAvatarMsg').textContent='Odlično! Serija '+(curSerija)+' končana. Pripravi se na naslednjo.';
+        }
+      } else {
+        timerSec--;
+        updateTimerDisplay();
+        // highlight current step
+        const stepIdx=Math.floor((1-(timerSec/timerTotal))*totalKoraki);
+        renderKoraki(v,Math.min(stepIdx,totalKoraki-1));
+      }
+    },1000);
+  }
+}
+
+function resetTimer(){
+  clearInterval(timerInterval); timerRunning=false;
+  const v=VAJE[curVaja];
+  setTimer(v.sekunde);
+  renderKoraki(v,-1);
+  document.getElementById('timerPlayBtn').textContent='▶ Začni';
+  document.getElementById('voAvatarMsg').textContent=v.avatarMsg;
+}
+
+function nextRound(){
+  clearInterval(timerInterval); timerRunning=false;
+  const v=VAJE[curVaja];
+  curSerija++;
+  if(curSerija>=v.serije){ finishVaja(v); return; }
+  setTimer(v.sekunde);
+  updateRound(v);
+  renderKoraki(v,-1);
+  document.getElementById('timerPlayBtn').textContent='▶ Začni';
+  document.getElementById('voAvatarMsg').textContent='Serija '+(curSerija+1)+' — pripravi se!';
+}
+
+function finishVaja(v){
+  document.getElementById('voDone').style.display='block';
+  document.getElementById('voKoraki').style.display='none';
+  document.getElementById('voDoneMsg').textContent=v.doneMsg;
+  document.getElementById('voAvatarMsg').textContent='Bravo! Vaja je zaključena. ✨';
+  document.getElementById('timerNum').textContent='✓';
+  document.getElementById('timerFill').style.width='0%';
+  document.getElementById('timerPlayBtn').textContent='▶ Začni';
+}
+
 function toggleFaq(el){
   const item=el.parentElement;
   const isOpen=item.classList.contains('open');
