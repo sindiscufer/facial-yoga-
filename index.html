@@ -1025,9 +1025,10 @@ async function dodajTelovadbo(){
 
 async function naložiTelovadbo(){
   if(!curUser) return;
-  const d=document.getElementById('tFilterDatum')?.value||new Date().toISOString().split('T')[0];
-  const {data}=await sb.from('telovadba').select('*').eq('user_id',curUser.id).order('datum',{ascending:false}).limit(20);
+  const {data, error}=await sb.from('telovadba').select('*').eq('user_id',curUser.id).order('datum',{ascending:false}).order('created_at',{ascending:false}).limit(20);
+  console.log('Telovadba data:', data, 'Error:', error);
   const tb=document.getElementById('telovadbaList');
+  if(error){tb.innerHTML=`<tr><td colspan="6" style="color:red;padding:1rem;">Napaka: ${error.message}</td></tr>`;return;}
   if(!data||!data.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--siva);padding:1.5rem;">Še ni zabeležene telovadbe</td></tr>';return;}
   tb.innerHTML=data.map(r=>`<tr><td>${r.datum}</td><td>${r.vrsta}</td><td>${r.trajanje_min} min</td><td>${r.intenzivnost}</td><td><span class="badge badge-teal">🔥 ${r.kalorije_porabljene} kcal</span></td><td><button class="del-btn" onclick="izbrišiTelovadbo('${r.id}')">✕</button></td></tr>`).join('');
 }
