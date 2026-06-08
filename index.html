@@ -1006,10 +1006,21 @@ async function dodajTelovadbo(){
   const datum=document.getElementById('tDatum').value;
   if(!datum){showToast('Vnesi datum!');return;}
   const data={user_id:curUser.id,datum,vrsta,trajanje_min:min,intenzivnost:intenz,kalorije_porabljene:kal,opomba:document.getElementById('tOpomba').value||''};
+  console.log('Shranjujem telovadbo:', JSON.stringify(data));
+  console.log('curUser.id:', curUser.id);
   showToast('Shranjujem...');
-  const {error}=await sb.from('telovadba').insert(data);
-  if(error){showToast('Napaka: '+error.message);console.error('Supabase error:',error);}
-  else{showToast('Telovadba zabeležena! 🔥 '+kal+' kcal');document.getElementById('tTrajanje').value='';document.getElementById('tOpomba').value='';document.getElementById('tKalIzracun').style.display='none';naložiTelovadbo();}
+  const {data:result, error}=await sb.from('telovadba').insert(data).select();
+  console.log('Rezultat:', result, 'Napaka:', error);
+  if(error){
+    showToast('Napaka: '+error.message);
+    console.error('Supabase napaka:', JSON.stringify(error));
+  } else {
+    showToast('Telovadba zabeležena! 🔥 '+kal+' kcal');
+    document.getElementById('tTrajanje').value='';
+    document.getElementById('tOpomba').value='';
+    document.getElementById('tKalIzracun').style.display='none';
+    naložiTelovadbo();
+  }
 }
 
 async function naložiTelovadbo(){
