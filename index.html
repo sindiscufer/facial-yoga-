@@ -322,9 +322,9 @@ select.input{cursor:pointer;}
       <!-- VIDEO PLAYER -->
       <div id="vajaVideoWrap" style="display:none;margin-bottom:1.25rem;">
         <div class="card" style="padding:0;overflow:hidden;position:relative;">
-          <div style="display:grid;grid-template-columns:1fr 1fr;">
-            <div style="position:relative;background:#1a0a0e;">
-              <video id="vajaVideo" controls playsinline style="width:100%;height:360px;display:block;object-fit:cover;">
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:0;">
+            <div style="position:relative;background:#000;width:280px;flex-shrink:0;">
+              <video id="vajaVideo" controls playsinline style="width:280px;height:498px;display:block;object-fit:cover;">
                 <source id="vajaVideoSrc" src="" type="video/mp4">
               </video>
               <div id="vajaVideoOverlay" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(44,26,30,0.7);cursor:pointer;" onclick="playVajaVideo()">
