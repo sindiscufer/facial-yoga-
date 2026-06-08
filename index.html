@@ -848,10 +848,15 @@ function showAuthMsg(msg,type){
 
 // ── NAVIGATION ──
 function showPage(p){
-  document.querySelectorAll('.page').forEach(el=>el.classList.add('hidden'));
+  document.querySelectorAll('.page').forEach(el=>{
+    el.classList.remove('active');
+    el.classList.add('hidden');
+  });
   document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
-  document.getElementById('page-'+p).classList.remove('hidden');
-  document.querySelector(`[data-page="${p}"]`).classList.add('active');
+  const pg=document.getElementById('page-'+p);
+  if(pg){pg.classList.remove('hidden');pg.classList.add('active');}
+  const tab=document.querySelector(`[data-page="${p}"]`);
+  if(tab) tab.classList.add('active');
   if(p==='prehrana') naložiPrehrano();
   if(p==='telovadba') naložiTelovadbo();
   if(p==='napredek'){naložiMeritve();naložiTedenPovzetek();}
