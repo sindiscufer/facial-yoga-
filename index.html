@@ -885,10 +885,11 @@ async function naložiProfil(){
 }
 
 async function shraniProfil(){
-  if(!curUser) return;
+  if(!curUser){showToast('Najprej se prijavi!');return;}
   const data={
     id:curUser.id,
-    ime:document.getElementById('prIme').value,
+    email:curUser.email,
+    ime:document.getElementById('prIme').value||'',
     starost:parseInt(document.getElementById('prStarost').value)||null,
     visina_cm:parseInt(document.getElementById('prVisina').value)||null,
     teza_kg:parseFloat(document.getElementById('prTeza').value)||null,
@@ -898,9 +899,16 @@ async function shraniProfil(){
     ciljna_teza_kg:parseFloat(document.getElementById('prCiljTeza').value)||null,
     updated_at:new Date().toISOString()
   };
-  const {error}=await sb.from('profiles').upsert(data);
-  if(error) showToast('Napaka: '+error.message);
-  else{showToast('Profil shranjen! ✓');curProfile=data;document.getElementById('dashIme').textContent=data.ime||'';}
+  showToast('Shranjujem profil...');
+  const {error}=await sb.from('profiles').upsert(data,{onConflict:'id'});
+  if(error){
+    console.error('Profil napaka:', JSON.stringify(error));
+    showToast('Napaka: '+error.message);
+  } else {
+    curProfile=data;
+    showToast('Profil shranjen! ✓');
+    document.getElementById('dashIme').textContent=data.ime||curUser.email.split('@')[0];
+  }
 }
 
 // ── BMR ──
