@@ -3,675 +3,752 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lift & Glow — Joga in masaža obraza</title>
-<meta name="description" content="Naravni lifting obraza z jogo in masažo. Vaje za podočnjake, čvrstost kože in sijaj — 5 minut na dan.">
+<title>Lift & Glow — Wellness platforma</title>
+<meta name="description" content="Naravni lifting obraza, prehrana in telovadba — vse na enem mestu.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--roza:#E8829A;--roza-mid:#D4537E;--roza-svetla:#F4C0D1;--roza-bleda:#FDF0F4;--zlata:#C9923A;--zlata-svetla:#FAE0A0;--zlata-bleda:#FDF8EC;--krem:#FAF6F0;--temna:#2C1A1E;--siva:#8A7070;--bela:#FFFFFF;}
+:root{
+  --roza:#E8829A;--roza-mid:#D4537E;--roza-svetla:#F4C0D1;--roza-bleda:#FDF0F4;
+  --zlata:#C9923A;--zlata-svetla:#FAE0A0;--zlata-bleda:#FDF8EC;
+  --teal:#1D9E75;--teal-bleda:#E1F5EE;
+  --vijola:#7F77DD;--vijola-bleda:#EEEDFE;
+  --krem:#FAF6F0;--temna:#2C1A1E;--siva:#8A7070;--bela:#FFFFFF;
+  --danger:#E24B4A;--danger-bleda:#FCEBEB;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{font-family:'DM Sans',sans-serif;background:var(--krem);color:var(--temna);overflow-x:hidden;}
 
-nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1.1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(250,246,240,0.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,168,67,0.12);}
-.logo{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:400;color:var(--temna);}
-.logo span{color:var(--roza);font-style:italic;}
-nav ul{display:flex;gap:2rem;list-style:none;}
-nav ul a{text-decoration:none;font-size:0.82rem;font-weight:400;color:var(--siva);letter-spacing:0.06em;text-transform:uppercase;transition:color 0.2s;}
-nav ul a:hover{color:var(--roza);}
-.nav-cta{background:var(--roza);color:var(--bela)!important;padding:0.5rem 1.3rem;border-radius:2rem;font-weight:500!important;text-transform:none!important;letter-spacing:0!important;}
-.nav-cta:hover{background:var(--roza-mid)!important;}
+/* ── UTILS ── */
+.hidden{display:none!important;}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
 
-.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding-top:4.5rem;position:relative;overflow:hidden;}
-.hero-bg{position:absolute;top:-120px;right:-80px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(244,192,209,0.35),transparent 70%);pointer-events:none;}
-.hero-bg2{position:absolute;bottom:-100px;left:-60px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(250,224,160,0.25),transparent 70%);pointer-events:none;}
-.hero-left{display:flex;flex-direction:column;justify-content:center;padding:4rem 3rem 4rem 5rem;position:relative;z-index:2;}
-.hero-tag{display:inline-flex;align-items:center;gap:0.5rem;font-size:0.72rem;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--zlata);margin-bottom:1.5rem;}
-.hero-tag::before{content:'';display:block;width:2rem;height:1px;background:var(--zlata);}
-.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,5vw,4.8rem);font-weight:300;line-height:1.08;color:var(--temna);margin-bottom:1.5rem;}
-.hero h1 em{font-style:italic;color:var(--roza);}
-.hero-desc{font-size:1rem;line-height:1.78;color:var(--siva);max-width:400px;margin-bottom:2.5rem;}
-.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
-.btn-primary{background:var(--roza);color:var(--bela);padding:0.85rem 2rem;border-radius:3rem;text-decoration:none;font-size:0.9rem;font-weight:500;transition:all 0.25s;border:2px solid var(--roza);display:inline-block;}
-.btn-primary:hover{background:transparent;color:var(--roza);}
-.btn-secondary{color:var(--temna);padding:0.85rem 2rem;border-radius:3rem;text-decoration:none;font-size:0.9rem;transition:all 0.25s;border:1px solid rgba(44,26,30,0.18);display:inline-block;}
-.btn-secondary:hover{border-color:var(--roza);color:var(--roza);}
-.hero-stats{display:flex;gap:2.5rem;margin-top:2.5rem;padding-top:2rem;border-top:1px solid rgba(212,168,67,0.18);}
-.stat-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:400;color:var(--temna);display:block;}
-.stat-label{font-size:0.72rem;color:var(--siva);display:block;margin-top:0.1rem;}
+/* ── AUTH SCREEN ── */
+#authScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--roza-bleda),var(--zlata-bleda));}
+.auth-card{background:var(--bela);border-radius:1.5rem;padding:2.5rem;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(232,130,154,0.15);}
+.auth-logo{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:400;color:var(--temna);text-align:center;margin-bottom:0.25rem;}
+.auth-logo span{color:var(--roza);font-style:italic;}
+.auth-subtitle{text-align:center;font-size:0.85rem;color:var(--siva);margin-bottom:2rem;}
+.auth-tabs{display:flex;gap:0.5rem;margin-bottom:1.5rem;background:var(--krem);border-radius:2rem;padding:4px;}
+.auth-tab{flex:1;padding:0.6rem;border:none;background:transparent;border-radius:2rem;font-family:'DM Sans',sans-serif;font-size:0.85rem;cursor:pointer;color:var(--siva);transition:all 0.2s;}
+.auth-tab.active{background:var(--bela);color:var(--temna);font-weight:500;box-shadow:0 2px 8px rgba(44,26,30,0.08);}
+.form-group{margin-bottom:1rem;}
+.form-label{font-size:0.8rem;font-weight:500;color:var(--siva);display:block;margin-bottom:0.4rem;letter-spacing:0.02em;}
+.form-input{width:100%;padding:0.75rem 1rem;border:1px solid rgba(44,26,30,0.15);border-radius:0.75rem;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--temna);background:var(--bela);transition:border-color 0.2s;outline:none;}
+.form-input:focus{border-color:var(--roza);}
+.btn-auth{width:100%;padding:0.85rem;background:var(--roza);color:var(--bela);border:none;border-radius:2rem;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;transition:background 0.2s;margin-top:0.5rem;}
+.btn-auth:hover{background:var(--roza-mid);}
+.auth-msg{font-size:0.82rem;text-align:center;margin-top:1rem;padding:0.6rem 1rem;border-radius:0.5rem;}
+.auth-msg.error{background:var(--danger-bleda);color:var(--danger);}
+.auth-msg.success{background:var(--teal-bleda);color:var(--teal);}
 
-.hero-right{position:relative;display:flex;align-items:center;justify-content:center;padding:4rem 3rem;z-index:2;}
-.avatar-wrap{position:relative;width:320px;}
-.floating-badge{position:absolute;background:var(--bela);border-radius:1rem;padding:0.65rem 1rem;box-shadow:0 8px 30px rgba(232,130,154,0.15);font-size:0.78rem;font-weight:500;color:var(--temna);white-space:nowrap;z-index:10;}
-.badge-1{top:8%;left:-18%;animation:float1 4s ease-in-out infinite;}
-.badge-2{bottom:18%;right:-16%;animation:float2 5s ease-in-out infinite;}
-.badge-3{bottom:40%;left:-20%;animation:float1 6s ease-in-out infinite 1s;}
-.badge-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:0.4rem;}
-@keyframes float1{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
-@keyframes float2{0%,100%{transform:translateY(0);}50%{transform:translateY(8px);}}
+/* ── APP SHELL ── */
+#appShell{display:none;min-height:100vh;flex-direction:column;}
+#appShell.visible{display:flex;}
 
-.section-tag{font-size:0.72rem;font-weight:500;letter-spacing:0.13em;text-transform:uppercase;color:var(--zlata);display:flex;align-items:center;gap:0.75rem;margin-bottom:0.9rem;}
-.section-tag::before{content:'';display:block;width:2rem;height:1px;background:var(--zlata);}
-.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:300;line-height:1.18;color:var(--temna);margin-bottom:2.5rem;max-width:520px;}
+/* ── NAV ── */
+.app-nav{position:sticky;top:0;z-index:100;background:rgba(250,246,240,0.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(212,168,67,0.12);padding:0.9rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;color:var(--temna);}
+.nav-logo span{color:var(--roza);font-style:italic;}
+.nav-tabs{display:flex;gap:0.25rem;}
+.nav-tab{display:flex;align-items:center;gap:0.4rem;padding:0.5rem 1rem;border:none;background:transparent;border-radius:2rem;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;color:var(--siva);transition:all 0.2s;}
+.nav-tab.active{background:var(--roza-bleda);color:var(--roza);font-weight:500;}
+.nav-tab:hover:not(.active){background:var(--krem);}
+.nav-right{display:flex;align-items:center;gap:0.75rem;}
+.nav-user{font-size:0.8rem;color:var(--siva);}
+.btn-logout{padding:0.4rem 1rem;border:1px solid rgba(44,26,30,0.15);background:transparent;border-radius:2rem;font-family:'DM Sans',sans-serif;font-size:0.8rem;cursor:pointer;color:var(--siva);transition:all 0.2s;}
+.btn-logout:hover{border-color:var(--roza);color:var(--roza);}
+
+/* ── CONTENT ── */
+.app-content{flex:1;padding:2rem;}
+.page{display:none;}
+.page.active{display:block;}
+
+/* ── CARDS ── */
+.card{background:var(--bela);border-radius:1.25rem;padding:1.5rem;border:1px solid rgba(232,130,154,0.1);}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;color:var(--temna);margin-bottom:0.25rem;}
+.card-subtitle{font-size:0.82rem;color:var(--siva);margin-bottom:1.25rem;}
+
+/* ── GRID ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+
+/* ── STAT CARDS ── */
+.stat-card{background:var(--bela);border-radius:1rem;padding:1.25rem;border:1px solid rgba(232,130,154,0.1);text-align:center;}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:400;color:var(--temna);display:block;}
+.stat-lbl{font-size:0.75rem;color:var(--siva);display:block;margin-top:0.2rem;}
+.stat-bar{height:4px;background:var(--roza-bleda);border-radius:2px;margin-top:0.75rem;overflow:hidden;}
+.stat-bar-fill{height:100%;background:linear-gradient(90deg,var(--roza),var(--zlata-svetla));border-radius:2px;transition:width 0.6s ease;}
+
+/* ── SECTION HEADERS ── */
+.section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;color:var(--temna);}
 .section-title em{font-style:italic;color:var(--roza);}
 
-.kako{padding:6rem 5rem;background:var(--bela);}
-.kako-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:4rem;align-items:start;}
-.kako-steps{display:flex;flex-direction:column;gap:1.25rem;}
-.kako-step{display:flex;gap:1.25rem;align-items:flex-start;padding:1.4rem;border-radius:1.25rem;background:var(--krem);transition:transform 0.3s;}
-.kako-step:hover{transform:translateX(6px);}
-.step-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.step-body h3{font-size:0.93rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;}
-.step-body p{font-size:0.82rem;line-height:1.65;color:var(--siva);}
+/* ── BUTTONS ── */
+.btn{padding:0.65rem 1.5rem;border-radius:2rem;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:500;cursor:pointer;transition:all 0.2s;border:none;}
+.btn-primary{background:var(--roza);color:var(--bela);}
+.btn-primary:hover{background:var(--roza-mid);}
+.btn-secondary{background:transparent;color:var(--siva);border:1px solid rgba(44,26,30,0.15);}
+.btn-secondary:hover{border-color:var(--roza);color:var(--roza);}
+.btn-sm{padding:0.45rem 1rem;font-size:0.78rem;}
+.btn-teal{background:var(--teal);color:var(--bela);}
+.btn-teal:hover{background:#0F6E56;}
+.btn-amber{background:var(--zlata);color:var(--bela);}
+.btn-amber:hover{background:#A07020;}
+.btn-vijola{background:var(--vijola);color:var(--bela);}
+.btn-vijola:hover{background:#534AB7;}
 
-.vaje-section{padding:6rem 5rem;background:var(--krem);}
-.vaje-intro{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin-bottom:3rem;}
-.vaje-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
-.vaja-card{background:var(--bela);border-radius:1.5rem;padding:1.75rem;border:1px solid rgba(232,130,154,0.08);transition:all 0.3s;position:relative;overflow:hidden;}
-.vaja-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--roza),var(--zlata-svetla));transform:scaleX(0);transform-origin:left;transition:transform 0.3s;}
-.vaja-card:hover::before{transform:scaleX(1);}
-.vaja-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(232,130,154,0.12);}
-.vaja-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;}
-.icon-roza{background:var(--roza-bleda);}
-.icon-zlata{background:var(--zlata-bleda);}
-.vaja-badge{display:inline-block;font-size:0.68rem;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:1rem;margin-bottom:0.7rem;}
-.badge-free{background:#E8F5EE;color:#1A7045;}
-.badge-premium{background:var(--zlata-bleda);color:#7A5000;}
-.vaja-card h3{font-size:0.93rem;font-weight:500;color:var(--temna);margin-bottom:0.4rem;}
-.vaja-card p{font-size:0.82rem;line-height:1.65;color:var(--siva);margin-bottom:1rem;}
-.vaja-meta{display:flex;gap:1rem;font-size:0.75rem;color:var(--siva);}
-.lock-overlay{position:absolute;inset:0;background:rgba(250,246,240,0.93);border-radius:1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.4rem;opacity:0;transition:opacity 0.3s;}
-.vaja-card.premium-card:hover .lock-overlay{opacity:1;}
-.lock-overlay span{font-size:0.8rem;color:var(--siva);}
+/* ── BADGES ── */
+.badge{display:inline-block;font-size:0.7rem;font-weight:500;padding:0.2rem 0.6rem;border-radius:1rem;}
+.badge-roza{background:var(--roza-bleda);color:var(--roza-mid);}
+.badge-teal{background:var(--teal-bleda);color:#085041;}
+.badge-zlata{background:var(--zlata-bleda);color:#7A5000;}
+.badge-vijola{background:var(--vijola-bleda);color:#3C3489;}
 
-.pricing{padding:6rem 5rem;background:var(--temna);position:relative;overflow:hidden;}
-.pricing-deco{position:absolute;top:-200px;right:-200px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(232,130,154,0.12),transparent 70%);pointer-events:none;}
-.pricing .section-tag{color:var(--zlata-svetla);}
-.pricing .section-tag::before{background:var(--zlata-svetla);}
-.pricing .section-title{color:var(--bela);}
-.pricing .section-title em{color:var(--roza-svetla);}
-.pricing-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
-.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
-.plan{border-radius:1.5rem;padding:2rem;}
-.plan-free{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);}
-.plan-premium{background:linear-gradient(135deg,var(--roza),#B03060);}
-.plan-tag{font-size:0.7rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:0.9rem;display:block;}
-.plan-premium .plan-tag{color:rgba(255,255,255,0.8);}
-.plan-price{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;color:var(--bela);line-height:1;margin-bottom:0.2rem;}
-.plan-period{font-size:0.78rem;color:rgba(255,255,255,0.45);margin-bottom:1.5rem;display:block;}
-.plan-features{list-style:none;display:flex;flex-direction:column;gap:0.55rem;margin-bottom:1.75rem;}
-.plan-features li{font-size:0.83rem;color:rgba(255,255,255,0.72);display:flex;align-items:center;gap:0.5rem;}
-.plan-features li::before{content:'✓';font-size:0.72rem;color:var(--zlata-svetla);font-weight:500;flex-shrink:0;}
-.plan-btn{display:block;text-align:center;padding:0.75rem;border-radius:2rem;font-size:0.85rem;font-weight:500;text-decoration:none;transition:all 0.2s;cursor:pointer;border:none;width:100%;}
-.plan-free .plan-btn{background:rgba(255,255,255,0.08);color:var(--bela);border:1px solid rgba(255,255,255,0.15);}
-.plan-free .plan-btn:hover{background:rgba(255,255,255,0.15);}
-.plan-premium .plan-btn{background:var(--bela);color:var(--roza);}
-.plan-premium .plan-btn:hover{background:var(--zlata-svetla);color:#7A5000;}
+/* ── FORM ELEMENTS ── */
+.input{width:100%;padding:0.65rem 0.9rem;border:1px solid rgba(44,26,30,0.15);border-radius:0.75rem;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--temna);background:var(--bela);outline:none;transition:border-color 0.2s;}
+.input:focus{border-color:var(--roza);}
+select.input{cursor:pointer;}
+.label{font-size:0.78rem;font-weight:500;color:var(--siva);display:block;margin-bottom:0.3rem;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;}
+.form-field{margin-bottom:0.75rem;}
 
-.rezultati{padding:6rem 5rem;background:var(--bela);}
-.rezultati-layout{display:grid;grid-template-columns:1.1fr 1fr;gap:4rem;align-items:center;}
-.rezultati-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
-.rezultat-card{background:var(--krem);border-radius:1.5rem;padding:1.6rem;transition:transform 0.3s;}
-.rezultat-card:hover{transform:translateY(-3px);}
-.rezultat-card.wide{grid-column:1/-1;display:flex;align-items:center;gap:1.25rem;}
-.rez-icon{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.rezultat-card h3{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:400;color:var(--temna);margin-bottom:0.35rem;}
-.rezultat-card p{font-size:0.82rem;line-height:1.65;color:var(--siva);}
+/* ── TABLE ── */
+.data-table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+.data-table th{text-align:left;font-size:0.75rem;font-weight:500;color:var(--siva);padding:0.6rem 0.75rem;border-bottom:1px solid rgba(44,26,30,0.08);text-transform:uppercase;letter-spacing:0.04em;}
+.data-table td{padding:0.7rem 0.75rem;border-bottom:1px solid rgba(44,26,30,0.05);color:var(--temna);}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:var(--krem);}
+.del-btn{background:none;border:none;color:var(--siva);cursor:pointer;font-size:0.85rem;padding:0.2rem 0.4rem;border-radius:0.25rem;transition:color 0.2s;}
+.del-btn:hover{color:var(--danger);}
 
-.mnenja{padding:6rem 5rem;background:var(--roza-bleda);}
-.mnenja-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:1rem;}
-.mnenje{background:var(--bela);border-radius:1.5rem;padding:1.75rem;transition:transform 0.3s;}
-.mnenje:hover{transform:translateY(-3px);}
-.mnenje-tekst{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-style:italic;line-height:1.65;color:var(--temna);margin-bottom:1.25rem;}
-.mnenje-avtor{display:flex;align-items:center;gap:0.75rem;}
-.avtor-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:500;color:var(--bela);flex-shrink:0;}
-.avtor-ime{font-size:0.85rem;font-weight:500;color:var(--temna);display:block;}
-.avtor-info{font-size:0.72rem;color:var(--siva);display:block;}
-.zvezde{color:var(--zlata);font-size:0.85rem;margin-bottom:0.75rem;letter-spacing:2px;}
+/* ── PROGRESS RING ── */
+.ring-wrap{position:relative;width:80px;height:80px;flex-shrink:0;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-num{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:400;color:var(--temna);line-height:1;}
+.ring-unit{font-size:0.65rem;color:var(--siva);}
 
-.cta-banner{padding:6rem 5rem;background:linear-gradient(135deg,var(--roza-bleda),var(--zlata-bleda));text-align:center;position:relative;overflow:hidden;}
-.cta-banner h2{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.4rem);font-weight:300;color:var(--temna);margin-bottom:1rem;}
-.cta-banner h2 em{font-style:italic;color:var(--roza);}
-.cta-banner p{font-size:1rem;color:var(--siva);margin-bottom:2rem;}
+/* ── VAJE OVERLAY ── */
+#vajaOverlay{display:none;position:fixed;inset:0;z-index:500;background:var(--krem);overflow-y:auto;}
+.vo-nav{position:sticky;top:0;background:rgba(250,246,240,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(232,130,154,0.15);padding:0.9rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+.vo-back{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--siva);cursor:pointer;}
+.vo-back:hover{color:var(--roza);}
+.vo-body{display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 56px);}
+.vo-left{background:linear-gradient(160deg,var(--roza-bleda),var(--zlata-bleda));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem 2rem;}
+.vo-avatar{width:100%;max-width:260px;}
+.vo-avatar-msg{font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;color:var(--roza-mid);text-align:center;margin-top:0.75rem;}
+.vo-tip{background:rgba(255,255,255,0.75);border-radius:0.75rem;padding:0.75rem 1rem;font-size:0.8rem;color:var(--siva);line-height:1.6;margin-top:0.75rem;max-width:280px;text-align:center;}
+.vo-right{padding:2.5rem 2.5rem;display:flex;flex-direction:column;justify-content:center;}
+.vo-tag{font-size:0.7rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--zlata);margin-bottom:0.4rem;}
+.vo-title{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--temna);margin-bottom:0.4rem;}
+.vo-desc{font-size:0.88rem;color:var(--siva);line-height:1.7;margin-bottom:1.5rem;}
+.timer-wrap{background:var(--bela);border-radius:1.25rem;padding:1.5rem;border:1px solid rgba(232,130,154,0.1);margin-bottom:1.25rem;}
+.timer-display{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;}
+.timer-num{font-family:'Cormorant Garamond',serif;font-size:3.5rem;font-weight:300;color:var(--temna);line-height:1;font-variant-numeric:tabular-nums;}
+.timer-info{text-align:right;}
+.timer-round{font-size:0.75rem;color:var(--siva);display:block;}
+.timer-label{font-size:0.82rem;font-weight:500;color:var(--roza);display:block;margin-top:0.2rem;max-width:160px;}
+.timer-bar-bg{height:5px;background:var(--roza-bleda);border-radius:3px;overflow:hidden;margin-bottom:1rem;}
+.timer-bar-fill{height:100%;background:linear-gradient(90deg,var(--roza),var(--zlata-svetla));border-radius:3px;transition:width 1s linear;}
+.timer-btns{display:flex;gap:0.6rem;}
+.tbtn{flex:1;padding:0.65rem;border-radius:2rem;border:none;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:500;cursor:pointer;transition:all 0.2s;}
+.tbtn-play{background:var(--roza);color:var(--bela);}
+.tbtn-play:hover{background:var(--roza-mid);}
+.tbtn-reset{background:var(--krem);color:var(--siva);border:1px solid rgba(44,26,30,0.12);}
+.tbtn-next{background:var(--zlata-bleda);color:var(--zlata);}
+.koraki-wrap{display:flex;flex-direction:column;gap:0.5rem;}
+.korak-item{display:flex;gap:0.75rem;align-items:flex-start;padding:0.75rem 0.9rem;border-radius:0.9rem;background:var(--bela);border:1px solid rgba(232,130,154,0.08);transition:all 0.3s;}
+.korak-item.active-step{border-color:var(--roza);background:var(--roza-bleda);}
+.korak-item.done-step{opacity:0.5;}
+.korak-n{width:22px;height:22px;border-radius:50%;background:var(--roza-bleda);color:var(--roza);font-size:0.72rem;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all 0.3s;}
+.korak-item.active-step .korak-n{background:var(--roza);color:var(--bela);}
+.korak-t{font-size:0.83rem;color:var(--temna);line-height:1.55;}
+.vo-done{text-align:center;padding:2rem;display:none;}
+.vo-done h3{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--temna);margin-bottom:0.5rem;}
 
-.faq-wrap{padding:6rem 5rem;background:var(--bela);}
-.faq{max-width:720px;margin:0 auto;}
-.faq-item{border-bottom:1px solid rgba(44,26,30,0.08);padding:1.4rem 0;}
-.faq-q{font-size:0.93rem;font-weight:500;color:var(--temna);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;}
-.faq-q .arrow{font-size:1.3rem;color:var(--roza);transition:transform 0.3s;flex-shrink:0;}
-.faq-a{font-size:0.85rem;line-height:1.75;color:var(--siva);max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.3s;}
-.faq-item.open .faq-a{max-height:200px;padding-top:0.75rem;}
-.faq-item.open .arrow{transform:rotate(45deg);}
+/* ── KALKULATOR ── */
+.calc-result{background:linear-gradient(135deg,var(--roza-bleda),var(--zlata-bleda));border-radius:1.25rem;padding:1.5rem;margin-top:1.25rem;}
+.calc-main{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--temna);margin-bottom:0.25rem;}
+.calc-sub{font-size:0.82rem;color:var(--siva);margin-bottom:1rem;}
+.macro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.75rem;}
+.macro-card{background:var(--bela);border-radius:0.75rem;padding:0.75rem;text-align:center;}
+.macro-val{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;color:var(--temna);display:block;}
+.macro-lbl{font-size:0.7rem;color:var(--siva);display:block;}
 
-footer{background:var(--temna);padding:2.5rem 5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
-.footer-logo{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:400;color:var(--bela);}
-.footer-logo span{color:var(--roza-svetla);font-style:italic;}
-footer p{font-size:0.78rem;color:rgba(255,255,255,0.38);}
-.footer-links{display:flex;gap:1.5rem;}
-.footer-links a{font-size:0.78rem;color:rgba(255,255,255,0.38);text-decoration:none;transition:color 0.2s;}
-.footer-links a:hover{color:var(--roza-svetla);}
+/* ── TOAST ── */
+#toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--temna);color:var(--bela);padding:0.75rem 1.5rem;border-radius:2rem;font-size:0.85rem;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;}
+#toast.show{opacity:1;}
 
-.fade-in{opacity:0;transform:translateY(22px);transition:opacity 0.7s ease,transform 0.7s ease;}
-.fade-in.visible{opacity:1;transform:translateY(0);}
-
-@media(max-width:900px){
-  nav ul{display:none;}
-  .hero{grid-template-columns:1fr;padding-top:4rem;}
-  .hero-left{padding:2.5rem 1.5rem 2rem;}
-  .hero-right{display:none;}
-  .kako,.vaje-section,.pricing,.rezultati,.mnenja,.cta-banner,.faq-wrap{padding:4rem 1.5rem;}
-  .kako-grid,.vaje-intro,.pricing-layout,.rezultati-layout{grid-template-columns:1fr;gap:2rem;}
-  .vaje-grid,.mnenja-grid,.rezultati-cards{grid-template-columns:1fr;}
-  .pricing-grid{grid-template-columns:1fr;}
-  .hero-stats{gap:1.5rem;}
-  .rezultat-card.wide{flex-direction:column;}
-  footer{padding:2rem 1.5rem;flex-direction:column;text-align:center;}
-  .footer-links{justify-content:center;}
+/* ── MOBILE ── */
+@media(max-width:800px){
+  .app-nav{padding:0.75rem 1rem;}
+  .nav-tabs{gap:0;}
+  .nav-tab{padding:0.4rem 0.6rem;font-size:0.75rem;}
+  .app-content{padding:1rem;}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}
+  .form-row,.form-row-3{grid-template-columns:1fr;}
+  .vo-body{grid-template-columns:1fr;}
+  .vo-left{min-height:240px;padding:1.5rem;}
+  .vo-right{padding:1.5rem;}
 }
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="logo">Lift <span>& Glow</span></div>
-  <ul>
-    <li><a href="#kako">Metoda</a></li>
-    <li><a href="#vaje">Vaje</a></li>
-    <li><a href="#cenik">Ceník</a></li>
-    <li><a href="#cenik" class="nav-cta">Začni brezplačno</a></li>
-  </ul>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-bg2"></div>
-  <div class="hero-left">
-    <div class="hero-tag">Naravni lifting obraza</div>
-    <h1>Mlajši obraz<br>z <em>jogo</em><br>in masažo</h1>
-    <p class="hero-desc">Podočnjaki, povešena koža, utrujeni pogled — rešitev ni v iglah. Je v vajah, ki jih poznajo že tisočletja.</p>
-    <div class="hero-btns">
-      <a href="#vaje" class="btn-primary">Začni brezplačno</a>
-      <a href="#kako" class="btn-secondary">Kako deluje →</a>
+<!-- AUTH -->
+<div id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo">Lift <span>& Glow</span></div>
+    <div class="auth-subtitle">Tvoja wellness platforma</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuth('login')">Prijava</button>
+      <button class="auth-tab" onclick="switchAuth('register')">Registracija</button>
     </div>
-    <div class="hero-stats">
-      <div><span class="stat-num">5 min</span><span class="stat-label">na dan zadostuje</span></div>
-      <div><span class="stat-num">2–4 t</span><span class="stat-label">do prvih rezultatov</span></div>
-      <div><span class="stat-num">100%</span><span class="stat-label">naravno</span></div>
+    <div id="loginForm">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" id="loginEmail" class="form-input" placeholder="tvoj@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Geslo</label>
+        <input type="password" id="loginPass" class="form-input" placeholder="••••••••">
+      </div>
+      <button class="btn-auth" onclick="doLogin()">Prijava</button>
     </div>
+    <div id="registerForm" class="hidden">
+      <div class="form-group">
+        <label class="form-label">Ime</label>
+        <input type="text" id="regIme" class="form-input" placeholder="Ime">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" id="regEmail" class="form-input" placeholder="tvoj@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Geslo (min. 6 znakov)</label>
+        <input type="password" id="regPass" class="form-input" placeholder="••••••••">
+      </div>
+      <button class="btn-auth" onclick="doRegister()">Ustvari račun</button>
+    </div>
+    <div id="authMsg" class="hidden"></div>
   </div>
-  <div class="hero-right">
-    <div class="avatar-wrap">
-      <!-- ANIMATED SVG AVATAR -->
-      <svg viewBox="0 0 320 460" xmlns="http://www.w3.org/2000/svg" style="width:100%;filter:drop-shadow(0 20px 50px rgba(232,130,154,0.25));">
+</div>
+
+<!-- APP -->
+<div id="appShell">
+  <nav class="app-nav">
+    <div class="nav-logo">Lift <span>& Glow</span></div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showPage('dashboard')" data-page="dashboard">🏠 Dashboard</button>
+      <button class="nav-tab" onclick="showPage('joga')" data-page="joga">🧘 Joga obraza</button>
+      <button class="nav-tab" onclick="showPage('prehrana')" data-page="prehrana">🥗 Prehrana</button>
+      <button class="nav-tab" onclick="showPage('telovadba')" data-page="telovadba">💪 Telovadba</button>
+      <button class="nav-tab" onclick="showPage('napredek')" data-page="napredek">📈 Napredek</button>
+      <button class="nav-tab" onclick="showPage('profil')" data-page="profil">👤 Profil</button>
+    </div>
+    <div class="nav-right">
+      <span class="nav-user" id="navUser"></span>
+      <button class="btn-logout" onclick="doLogout()">Odjava</button>
+    </div>
+  </nav>
+
+  <div class="app-content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="page active" id="page-dashboard">
+      <div style="margin-bottom:1.5rem;">
+        <div class="section-title">Dober dan, <em id="dashIme">ime</em> ✨</div>
+        <div style="font-size:0.85rem;color:var(--siva);margin-top:0.25rem;" id="dashDatum"></div>
+      </div>
+      <div class="grid-4" style="margin-bottom:1.5rem;">
+        <div class="stat-card">
+          <span class="stat-val" id="dKal">—</span>
+          <span class="stat-lbl">Kalorije danes</span>
+          <div class="stat-bar"><div class="stat-bar-fill" id="dKalBar" style="width:0%"></div></div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-val" id="dPokurjeno">—</span>
+          <span class="stat-lbl">Pokurjeno kcal</span>
+          <div class="stat-bar"><div class="stat-bar-fill" style="background:linear-gradient(90deg,var(--teal),#9FE1CB);width:0%" id="dPokBar"></div></div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-val" id="dVaje">—</span>
+          <span class="stat-lbl">Vaje obraza</span>
+          <div class="stat-bar"><div class="stat-bar-fill" style="background:linear-gradient(90deg,var(--vijola),#AFA9EC);width:0%" id="dVajeBar"></div></div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-val" id="dDeficit">—</span>
+          <span class="stat-lbl">Kalorični deficit</span>
+          <div class="stat-bar"><div class="stat-bar-fill" style="background:linear-gradient(90deg,var(--zlata),var(--zlata-svetla));width:50%" id="dDefBar"></div></div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Hitri vnos</div>
+          <div class="card-subtitle">Zabeleži obrok ali vajo</div>
+          <div style="display:flex;flex-direction:column;gap:0.6rem;">
+            <button class="btn btn-primary" onclick="showPage('prehrana')">+ Dodaj obrok</button>
+            <button class="btn btn-teal" onclick="showPage('telovadba')">+ Zabeleži telovadbo</button>
+            <button class="btn btn-vijola" onclick="showPage('joga')">+ Začni vajo obraza</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Dnevni cilji</div>
+          <div class="card-subtitle">Napredek glede na tvoj BMR</div>
+          <div id="dashCilji" style="font-size:0.85rem;color:var(--siva);">Nastavi profil za prikaz ciljev →</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ JOGA OBRAZA ══ -->
+    <div class="page hidden" id="page-joga">
+      <div class="section-hd">
+        <div class="section-title">Joga <em>obraza</em></div>
+        <span class="badge badge-roza">3 brezplačne vaje</span>
+      </div>
+      <div class="grid-3">
+        <div class="card" onclick="openVaja(0)" style="cursor:pointer;transition:transform 0.2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
+          <div style="font-size:1.5rem;margin-bottom:0.75rem;">👁️</div>
+          <span class="badge badge-teal" style="margin-bottom:0.6rem;display:inline-block;">Brezplačno</span>
+          <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Tapkanje pod očmi</div>
+          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Zmanjša podočnjake in otekanje. Idealno zjutraj.</div>
+          <div style="font-size:0.78rem;color:var(--siva);">⏱ 3 × 30 sek &nbsp;·&nbsp; ▶ Začni</div>
+        </div>
+        <div class="card" onclick="openVaja(1)" style="cursor:pointer;transition:transform 0.2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
+          <div style="font-size:1.5rem;margin-bottom:0.75rem;">🌀</div>
+          <span class="badge badge-teal" style="margin-bottom:0.6rem;display:inline-block;">Brezplačno</span>
+          <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Limfna drenaža oči</div>
+          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Odvede zastalo tekočino, svežina takoj.</div>
+          <div style="font-size:0.78rem;color:var(--siva);">⏱ 2 × 45 sek &nbsp;·&nbsp; ▶ Začni</div>
+        </div>
+        <div class="card" onclick="openVaja(2)" style="cursor:pointer;transition:transform 0.2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
+          <div style="font-size:1.5rem;margin-bottom:0.75rem;">⬆️</div>
+          <span class="badge badge-teal" style="margin-bottom:0.6rem;display:inline-block;">Brezplačno</span>
+          <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Vaja "V" za obrvi</div>
+          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Dvigne veke, zmanjša utrujeni pogled.</div>
+          <div style="font-size:0.78rem;color:var(--siva);">⏱ 3 × 20 sek &nbsp;·&nbsp; ▶ Začni</div>
+        </div>
+        <div class="card" style="opacity:0.6;cursor:default;">
+          <div style="font-size:1.5rem;margin-bottom:0.75rem;">😊</div>
+          <span class="badge badge-zlata" style="margin-bottom:0.6rem;display:inline-block;">Premium</span>
+          <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Lifting ličnic</div>
+          <div style="font-size:0.82rem;color:var(--siva);">Kmalu na voljo</div>
+        </div>
+        <div class="card" style="opacity:0.6;cursor:default;">
+          <div style="font-size:1.5rem;margin-bottom:0.75rem;">💆</div>
+          <span class="badge badge-zlata" style="margin-bottom:0.6rem;display:inline-block;">Premium</span>
+          <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Gua sha masaža</div>
+          <div style="font-size:0.82rem;color:var(--siva);">Kmalu na voljo</div>
+        </div>
+        <div class="card" style="opacity:0.6;cursor:default;">
+          <div style="font-size:1.5rem;margin-bottom:0.75rem;">💪</div>
+          <span class="badge badge-zlata" style="margin-bottom:0.6rem;display:inline-block;">Premium</span>
+          <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Vrat & podbradek</div>
+          <div style="font-size:0.82rem;color:var(--siva);">Kmalu na voljo</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:1.25rem;">
+        <div class="card-title">Zgodovina vaj</div>
+        <div class="card-subtitle">Tvoje opravljene vaje</div>
+        <table class="data-table">
+          <thead><tr><th>Datum</th><th>Vaja</th><th>Serije</th><th>Čas</th></tr></thead>
+          <tbody id="vajeHistory"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ PREHRANA ══ -->
+    <div class="page hidden" id="page-prehrana">
+      <div class="section-hd">
+        <div class="section-title"><em>Prehrana</em> & kalorije</div>
+      </div>
+      <div class="grid-2" style="margin-bottom:1.25rem;">
+        <div class="card">
+          <div class="card-title">Dodaj obrok</div>
+          <div class="card-subtitle">Vnesi kar si pojedla</div>
+          <div class="form-row">
+            <div>
+              <label class="label">Obrok</label>
+              <select id="pObrok" class="input">
+                <option value="zajtrk">Zajtrk</option>
+                <option value="kosilo">Kosilo</option>
+                <option value="vecerja">Večerja</option>
+                <option value="prigrizek">Prigrizek</option>
+              </select>
+            </div>
+            <div>
+              <label class="label">Datum</label>
+              <input type="date" id="pDatum" class="input">
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="label">Naziv živila / obroka</label>
+            <input type="text" id="pNaziv" class="input" placeholder="npr. Ovseni kosmiči z mlekom">
+          </div>
+          <div class="form-row-3">
+            <div>
+              <label class="label">Kalorije (kcal)</label>
+              <input type="number" id="pKal" class="input" placeholder="350">
+            </div>
+            <div>
+              <label class="label">Beljakovine (g)</label>
+              <input type="number" id="pBelj" class="input" placeholder="12">
+            </div>
+            <div>
+              <label class="label">OH (g)</label>
+              <input type="number" id="pOH" class="input" placeholder="45">
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="label">Maščobe (g)</label>
+            <input type="number" id="pMasc" class="input" placeholder="8" style="max-width:120px;">
+          </div>
+          <button class="btn btn-primary" onclick="dodajObrok()">+ Dodaj obrok</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Danes</div>
+          <div class="card-subtitle" id="pDanasLabel">Skupaj za danes</div>
+          <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.25rem;">
+            <div class="ring-wrap">
+              <svg width="80" height="80" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="32" fill="none" stroke="var(--roza-bleda)" stroke-width="8"/>
+                <circle id="kalRing" cx="40" cy="40" r="32" fill="none" stroke="var(--roza)" stroke-width="8" stroke-dasharray="201" stroke-dashoffset="201" stroke-linecap="round"/>
+              </svg>
+              <div class="ring-label">
+                <span class="ring-num" id="kalRingNum">0</span>
+                <span class="ring-unit">kcal</span>
+              </div>
+            </div>
+            <div style="flex:1;">
+              <div style="margin-bottom:0.5rem;">
+                <div style="font-size:0.75rem;color:var(--siva);margin-bottom:2px;">Beljakovine</div>
+                <div style="height:6px;background:var(--roza-bleda);border-radius:3px;"><div id="beljBar" style="height:100%;background:var(--roza);border-radius:3px;width:0%;transition:width 0.5s;"></div></div>
+                <div style="font-size:0.72rem;color:var(--siva);margin-top:2px;"><span id="beljVal">0</span>g</div>
+              </div>
+              <div style="margin-bottom:0.5rem;">
+                <div style="font-size:0.75rem;color:var(--siva);margin-bottom:2px;">OH</div>
+                <div style="height:6px;background:var(--zlata-bleda);border-radius:3px;"><div id="ohBar" style="height:100%;background:var(--zlata);border-radius:3px;width:0%;transition:width 0.5s;"></div></div>
+                <div style="font-size:0.72rem;color:var(--siva);margin-top:2px;"><span id="ohVal">0</span>g</div>
+              </div>
+              <div>
+                <div style="font-size:0.75rem;color:var(--siva);margin-bottom:2px;">Maščobe</div>
+                <div style="height:6px;background:var(--teal-bleda);border-radius:3px;"><div id="mascBar" style="height:100%;background:var(--teal);border-radius:3px;width:0%;transition:width 0.5s;"></div></div>
+                <div style="font-size:0.72rem;color:var(--siva);margin-top:2px;"><span id="mascVal">0</span>g</div>
+              </div>
+            </div>
+          </div>
+          <div id="pCiljInfo" style="font-size:0.82rem;color:var(--siva);background:var(--krem);border-radius:0.75rem;padding:0.75rem;"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-hd" style="margin-bottom:0.75rem;">
+          <div class="card-title">Dnevnik prehrane</div>
+          <input type="date" id="pFilterDatum" class="input" style="width:auto;" onchange="naložiPrehrano()">
+        </div>
+        <table class="data-table">
+          <thead><tr><th>Obrok</th><th>Naziv</th><th>kcal</th><th>Belj.</th><th>OH</th><th>Maš.</th><th></th></tr></thead>
+          <tbody id="prehranaTbody"></tbody>
+        </table>
+        <div id="pSkupaj" style="text-align:right;font-size:0.85rem;color:var(--siva);margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid rgba(44,26,30,0.08);"></div>
+      </div>
+    </div>
+
+    <!-- ══ TELOVADBA ══ -->
+    <div class="page hidden" id="page-telovadba">
+      <div class="section-hd">
+        <div class="section-title"><em>Telovadba</em> & kalorije</div>
+      </div>
+      <div class="grid-2" style="margin-bottom:1.25rem;">
+        <div class="card">
+          <div class="card-title">Zabeleži telovadbo</div>
+          <div class="card-subtitle">Izračun kalorij po MET metodi</div>
+          <div class="form-row">
+            <div>
+              <label class="label">Vrsta telovadbe</label>
+              <select id="tVrsta" class="input" onchange="izracunajKalorije()">
+                <option value="hoja">Hoja (počasna)</option>
+                <option value="hoja_hitra">Hoja (hitra)</option>
+                <option value="tek">Tek</option>
+                <option value="kolesarjenje">Kolesarjenje</option>
+                <option value="plavanje">Plavanje</option>
+                <option value="fitnes">Fitnes / uteži</option>
+                <option value="joga">Joga / pilates</option>
+                <option value="ples">Ples</option>
+                <option value="kolesarjenje_sobno">Sobno kolo</option>
+                <option value="drugo">Drugo</option>
+              </select>
+            </div>
+            <div>
+              <label class="label">Datum</label>
+              <input type="date" id="tDatum" class="input">
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label class="label">Trajanje (min)</label>
+              <input type="number" id="tTrajanje" class="input" placeholder="30" oninput="izracunajKalorije()">
+            </div>
+            <div>
+              <label class="label">Intenzivnost</label>
+              <select id="tIntenz" class="input" onchange="izracunajKalorije()">
+                <option value="lahka">Lahka</option>
+                <option value="zmerna" selected>Zmerna</option>
+                <option value="intenzivna">Intenzivna</option>
+              </select>
+            </div>
+          </div>
+          <div id="tKalIzracun" style="background:var(--teal-bleda);border-radius:0.75rem;padding:0.75rem 1rem;margin-bottom:0.75rem;font-size:0.85rem;color:#085041;display:none;">
+            🔥 Ocenjena poraba: <strong id="tKalVal">—</strong> kcal
+            <div style="font-size:0.75rem;color:var(--siva);margin-top:0.2rem;">*Izračun temelji na tvoji teži in MET vrednosti</div>
+          </div>
+          <div class="form-field">
+            <label class="label">Opomba (neobvezno)</label>
+            <input type="text" id="tOpomba" class="input" placeholder="npr. Tek v parku">
+          </div>
+          <button class="btn btn-teal" onclick="dodajTelovadbo()">+ Zabeleži telovadbo</button>
+        </div>
+        <div class="card">
+          <div class="card-title">MET kalkulator</div>
+          <div class="card-subtitle">Metabolični ekvivalent naloge</div>
+          <div style="font-size:0.82rem;color:var(--siva);line-height:1.7;margin-bottom:1rem;">Formula: <strong>kcal = MET × teža (kg) × čas (h)</strong></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;font-size:0.8rem;">
+            <div style="background:var(--krem);border-radius:0.5rem;padding:0.5rem 0.75rem;"><span style="color:var(--siva);">Hoja</span><br><strong>MET 3.0–4.5</strong></div>
+            <div style="background:var(--krem);border-radius:0.5rem;padding:0.5rem 0.75rem;"><span style="color:var(--siva);">Tek</span><br><strong>MET 7.0–11.5</strong></div>
+            <div style="background:var(--krem);border-radius:0.5rem;padding:0.5rem 0.75rem;"><span style="color:var(--siva);">Kolesarjenje</span><br><strong>MET 4.0–8.0</strong></div>
+            <div style="background:var(--krem);border-radius:0.5rem;padding:0.5rem 0.75rem;"><span style="color:var(--siva);">Plavanje</span><br><strong>MET 6.0–9.8</strong></div>
+            <div style="background:var(--krem);border-radius:0.5rem;padding:0.5rem 0.75rem;"><span style="color:var(--siva);">Fitnes</span><br><strong>MET 3.5–6.0</strong></div>
+            <div style="background:var(--krem);border-radius:0.5rem;padding:0.5rem 0.75rem;"><span style="color:var(--siva);">Joga</span><br><strong>MET 2.5–3.5</strong></div>
+          </div>
+          <div style="margin-top:1rem;font-size:0.78rem;color:var(--siva);line-height:1.6;">Vnesi svojo težo v <strong>Profilu</strong> za natančnejši izračun. Vrednosti so ocene — dejanska poraba se razlikuje glede na posameznika.</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-hd" style="margin-bottom:0.75rem;">
+          <div class="card-title">Zgodovina telovadbe</div>
+          <input type="date" id="tFilterDatum" class="input" style="width:auto;" onchange="naložiTelovadbo()">
+        </div>
+        <table class="data-table">
+          <thead><tr><th>Datum</th><th>Vrsta</th><th>Trajanje</th><th>Intenz.</th><th>Kalorije</th><th></th></tr></thead>
+          <tbody id="telovadbaList"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ NAPREDEK ══ -->
+    <div class="page hidden" id="page-napredek">
+      <div class="section-hd">
+        <div class="section-title">Tvoj <em>napredek</em></div>
+      </div>
+      <div class="grid-2" style="margin-bottom:1.25rem;">
+        <div class="card">
+          <div class="card-title">Zabeleži meritev</div>
+          <div class="card-subtitle">Teža in obsegi</div>
+          <div class="form-row">
+            <div>
+              <label class="label">Datum</label>
+              <input type="date" id="mDatum" class="input">
+            </div>
+            <div>
+              <label class="label">Teža (kg)</label>
+              <input type="number" id="mTeza" class="input" placeholder="65.5" step="0.1">
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label class="label">Pas (cm)</label>
+              <input type="number" id="mPas" class="input" placeholder="72">
+            </div>
+            <div>
+              <label class="label">Boki (cm)</label>
+              <input type="number" id="mBoki" class="input" placeholder="96">
+            </div>
+          </div>
+          <button class="btn btn-vijola" onclick="dodajMeritev()">+ Zabeleži meritev</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Tedenski povzetek</div>
+          <div class="card-subtitle">Zadnjih 7 dni</div>
+          <div id="tedenPovzetek" style="font-size:0.85rem;color:var(--siva);">Naloži podatke...</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Zgodovina meritev</div>
+        <table class="data-table">
+          <thead><tr><th>Datum</th><th>Teža (kg)</th><th>Pas (cm)</th><th>Boki (cm)</th><th></th></tr></thead>
+          <tbody id="meritveList"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ PROFIL ══ -->
+    <div class="page hidden" id="page-profil">
+      <div class="section-hd">
+        <div class="section-title">Moj <em>profil</em></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Telesni podatki</div>
+          <div class="card-subtitle">Potrebni za izračun BMR in kalorij</div>
+          <div class="form-row">
+            <div>
+              <label class="label">Ime</label>
+              <input type="text" id="prIme" class="input" placeholder="Tvoje ime">
+            </div>
+            <div>
+              <label class="label">Starost (let)</label>
+              <input type="number" id="prStarost" class="input" placeholder="35">
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label class="label">Višina (cm)</label>
+              <input type="number" id="prVisina" class="input" placeholder="165">
+            </div>
+            <div>
+              <label class="label">Teža (kg)</label>
+              <input type="number" id="prTeza" class="input" placeholder="65" step="0.1">
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label class="label">Spol</label>
+              <select id="prSpol" class="input">
+                <option value="zenski">Ženski</option>
+                <option value="moski">Moški</option>
+              </select>
+            </div>
+            <div>
+              <label class="label">Ciljna teža (kg)</label>
+              <input type="number" id="prCiljTeza" class="input" placeholder="60" step="0.1">
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label class="label">Aktivnost</label>
+              <select id="prAktivnost" class="input">
+                <option value="sedentarno">Sedeče (brez vadbe)</option>
+                <option value="nizko">Nizko (1-2× / teden)</option>
+                <option value="zmerno" selected>Zmerno (3-5× / teden)</option>
+                <option value="aktivno">Aktivno (6-7× / teden)</option>
+                <option value="zelo_aktivno">Zelo aktivno (2× / dan)</option>
+              </select>
+            </div>
+            <div>
+              <label class="label">Cilj</label>
+              <select id="prCilj" class="input">
+                <option value="hujsanje">Hujšanje</option>
+                <option value="vzdrzevanje" selected>Vzdrževanje</option>
+                <option value="pridobivanje">Pridobivanje mišic</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="shraniProfil()">Shrani profil</button>
+        </div>
+        <div class="card">
+          <div class="card-title">BMR kalkulator</div>
+          <div class="card-subtitle">Bazalni metabolizem</div>
+          <div style="font-size:0.82rem;color:var(--siva);line-height:1.7;margin-bottom:1rem;">
+            <strong>BMR (Mifflin-St Jeor enačba)</strong> je število kalorij, ki jih tvoje telo potrebuje za osnovne funkcije v mirovanju.
+          </div>
+          <button class="btn btn-secondary" onclick="izracunajBMR()">Izračunaj BMR</button>
+          <div id="bmrResult" class="hidden">
+            <div class="calc-result" style="margin-top:1rem;">
+              <div style="font-size:0.75rem;color:var(--siva);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.25rem;">Tvoj dnevni BMR</div>
+              <div class="calc-main" id="bmrVal">—</div>
+              <div class="calc-sub">kcal / dan v mirovanju</div>
+              <div style="border-top:1px solid rgba(44,26,30,0.08);padding-top:0.75rem;margin-top:0.75rem;">
+                <div style="font-size:0.8rem;font-weight:500;color:var(--temna);margin-bottom:0.5rem;">TDEE (skupna dnevna poraba)</div>
+                <div id="tdeeVal" style="font-size:1.3rem;font-family:'Cormorant Garamond',serif;color:var(--roza);"></div>
+                <div style="font-size:0.75rem;color:var(--siva);margin-top:0.25rem;" id="ciljKalInfo"></div>
+              </div>
+              <div class="macro-grid">
+                <div class="macro-card">
+                  <span class="macro-val" id="mBelj">—</span>
+                  <span class="macro-lbl">Beljakovine (g)</span>
+                </div>
+                <div class="macro-card">
+                  <span class="macro-val" id="mOH">—</span>
+                  <span class="macro-lbl">OH (g)</span>
+                </div>
+                <div class="macro-card">
+                  <span class="macro-val" id="mMasc">—</span>
+                  <span class="macro-lbl">Maščobe (g)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- VAJA OVERLAY -->
+<div id="vajaOverlay">
+  <div class="vo-nav">
+    <button class="vo-back" onclick="closeVaja()">← Nazaj na vaje</button>
+    <div class="nav-logo">Lift <span>& Glow</span></div>
+    <div style="width:80px;"></div>
+  </div>
+  <div class="vo-body">
+    <div class="vo-left">
+      <svg class="vo-avatar" viewBox="0 0 320 460" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 16px 40px rgba(232,130,154,0.2));">
         <defs>
-          <radialGradient id="bg" cx="50%" cy="40%" r="55%"><stop offset="0%" stop-color="#FDF0F4"/><stop offset="100%" stop-color="#FDF8EC"/></radialGradient>
-          <radialGradient id="skin" cx="50%" cy="35%" r="60%"><stop offset="0%" stop-color="#FDDBC8"/><stop offset="100%" stop-color="#F5C0A0"/></radialGradient>
-          <radialGradient id="hair" cx="50%" cy="20%" r="60%"><stop offset="0%" stop-color="#5C3820"/><stop offset="100%" stop-color="#3A2010"/></radialGradient>
+          <radialGradient id="vbg" cx="50%" cy="40%" r="55%"><stop offset="0%" stop-color="#FDF0F4"/><stop offset="100%" stop-color="#FDF8EC"/></radialGradient>
+          <radialGradient id="vskin" cx="50%" cy="35%" r="60%"><stop offset="0%" stop-color="#FDDBC8"/><stop offset="100%" stop-color="#F5C0A0"/></radialGradient>
+          <radialGradient id="vhair" cx="50%" cy="20%" r="60%"><stop offset="0%" stop-color="#5C3820"/><stop offset="100%" stop-color="#3A2010"/></radialGradient>
         </defs>
-        <!-- Background -->
-        <ellipse cx="160" cy="235" rx="145" ry="215" fill="url(#bg)"/>
-        <!-- Neck -->
+        <ellipse cx="160" cy="235" rx="145" ry="215" fill="url(#vbg)"/>
         <rect x="135" y="295" width="50" height="55" rx="8" fill="#F5C0A0"/>
-        <!-- Clothes -->
         <path d="M40 410 Q160 360 280 410 L280 460 L40 460 Z" fill="#F4C0D1"/>
-        <path d="M40 410 Q160 372 280 410" fill="none" stroke="#E8829A" stroke-width="1.5" opacity="0.5"/>
-        <line x1="160" y1="368" x2="160" y2="460" stroke="#E8829A" stroke-width="1.2" opacity="0.3"/>
-        <!-- Face -->
-        <ellipse cx="160" cy="220" rx="86" ry="103" fill="url(#skin)"/>
-        <!-- Hair back -->
-        <ellipse cx="160" cy="148" rx="88" ry="78" fill="url(#hair)"/>
-        <!-- Hair sides -->
+        <ellipse cx="160" cy="220" rx="86" ry="103" fill="url(#vskin)"/>
+        <ellipse cx="160" cy="148" rx="88" ry="78" fill="url(#vhair)"/>
         <path d="M74 182 Q54 270 74 330 Q94 290 104 252 Z" fill="#3A2010"/>
         <path d="M246 182 Q266 270 246 330 Q226 290 216 252 Z" fill="#3A2010"/>
-        <!-- Ears -->
         <ellipse cx="75" cy="227" rx="9" ry="12" fill="#F0B090"/>
         <ellipse cx="245" cy="227" rx="9" ry="12" fill="#F0B090"/>
         <circle cx="75" cy="239" r="4" fill="#E8829A" opacity="0.8"/>
         <circle cx="245" cy="239" r="4" fill="#E8829A" opacity="0.8"/>
-        <!-- Eyebrows -->
         <path d="M118 186 Q132 179 146 183" fill="none" stroke="#5C3820" stroke-width="2.3" stroke-linecap="round"/>
         <path d="M174 183 Q188 179 202 186" fill="none" stroke="#5C3820" stroke-width="2.3" stroke-linecap="round"/>
-        <!-- Left eye -->
         <ellipse cx="132" cy="203" rx="14" ry="10" fill="#fff"/>
         <circle cx="134" cy="204" r="7" fill="#5C3820"/>
         <circle cx="134" cy="204" r="4" fill="#2C1A0E"/>
         <circle cx="137" cy="201" r="2" fill="#fff"/>
         <path d="M118 199 Q132 192 146 199" fill="none" stroke="#5C3820" stroke-width="1.4" stroke-linecap="round"/>
-        <!-- Right eye -->
         <ellipse cx="188" cy="203" rx="14" ry="10" fill="#fff"/>
         <circle cx="190" cy="204" r="7" fill="#5C3820"/>
         <circle cx="190" cy="204" r="4" fill="#2C1A0E"/>
         <circle cx="193" cy="201" r="2" fill="#fff"/>
         <path d="M174 199 Q188 192 202 199" fill="none" stroke="#5C3820" stroke-width="1.4" stroke-linecap="round"/>
-        <!-- Nose -->
         <path d="M155 212 Q152 235 149 242 Q156 248 160 246 Q164 248 171 242 Q168 235 165 212" fill="none" stroke="#D09070" stroke-width="1.4" stroke-linecap="round" opacity="0.6"/>
-        <!-- Smile -->
         <path d="M140 265 Q160 280 180 265" fill="none" stroke="#C06070" stroke-width="2.3" stroke-linecap="round"/>
-        <path d="M144 265 Q160 274 176 265" fill="#E8A0A0" opacity="0.3"/>
-        <!-- Blush -->
         <ellipse cx="112" cy="245" rx="17" ry="9" fill="#F4A0B0" opacity="0.32"/>
         <ellipse cx="208" cy="245" rx="17" ry="9" fill="#F4A0B0" opacity="0.32"/>
-        <!-- Animated hand fingers -->
         <g>
           <path d="M62 298 Q76 274 90 260 Q98 255 102 262 Q108 250 114 258 Q120 246 126 255 Q132 262 128 272 Q120 282 110 288 Q100 298 88 308 Q74 316 62 308 Z" fill="#FDDBC8" stroke="#E0B090" stroke-width="0.8"/>
-          <line x1="102" y1="262" x2="95" y2="284" stroke="#D0A080" stroke-width="0.8" opacity="0.5"/>
-          <line x1="114" y1="258" x2="108" y2="281" stroke="#D0A080" stroke-width="0.8" opacity="0.5"/>
-          <line x1="126" y1="255" x2="121" y2="278" stroke="#D0A080" stroke-width="0.8" opacity="0.5"/>
         </g>
-        <!-- Sparkles -->
         <circle cx="96" cy="172" r="3" fill="#FAC775" opacity="0.8"><animate attributeName="opacity" values="0.8;0.2;0.8" dur="2.5s" repeatCount="indefinite"/></circle>
-        <circle cx="228" cy="158" r="2.5" fill="#F4C0D1" opacity="0.9"><animate attributeName="opacity" values="0.9;0.2;0.9" dur="3s" repeatCount="indefinite" begin="0.5s"/></circle>
-        <circle cx="248" cy="278" r="2" fill="#E8829A" opacity="0.7"><animate attributeName="opacity" values="0.7;0.1;0.7" dur="2s" repeatCount="indefinite" begin="1s"/></circle>
-        <circle cx="88" cy="298" r="2" fill="#FAC775" opacity="0.6"><animate attributeName="opacity" values="0.6;0.1;0.6" dur="3.5s" repeatCount="indefinite" begin="0.8s"/></circle>
-        <!-- Animated massage arcs -->
-        <path d="M106 230 Q116 225 126 230" fill="none" stroke="#E8829A" stroke-width="1.5" stroke-linecap="round"><animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite"/></path>
-        <path d="M194 230 Q204 225 214 230" fill="none" stroke="#E8829A" stroke-width="1.5" stroke-linecap="round"><animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="0.5s"/></path>
-        <!-- Label -->
+        <circle cx="228" cy="158" r="2.5" fill="#F4C0D1"><animate attributeName="opacity" values="0.9;0.2;0.9" dur="3s" repeatCount="indefinite" begin="0.5s"/></circle>
+        <path d="M106 230 Q116 225 126 230" fill="none" stroke="#E8829A" stroke-width="2" stroke-linecap="round"><animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/></path>
+        <path d="M194 230 Q204 225 214 230" fill="none" stroke="#E8829A" stroke-width="2" stroke-linecap="round"><animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="0.5s"/></path>
         <rect x="76" y="428" width="168" height="26" rx="13" fill="rgba(232,130,154,0.15)" stroke="rgba(232,130,154,0.3)" stroke-width="1"/>
         <text x="160" y="445" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="12" fill="#C04070" font-style="italic">tvoja AI inštruktorica</text>
       </svg>
-      <div class="floating-badge badge-1"><span class="badge-dot" style="background:#9FE1CB"></span>Lifting ličnic</div>
-      <div class="floating-badge badge-2"><span class="badge-dot" style="background:#F4C0D1"></span>Manj podočnjakov</div>
-      <div class="floating-badge badge-3"><span class="badge-dot" style="background:#FAC775"></span>Čvrstejša koža</div>
-    </div>
-  </div>
-</section>
-
-<!-- KAKO DELUJE -->
-<section class="kako" id="kako">
-  <div class="kako-grid">
-    <div class="fade-in">
-      <div class="section-tag">Metoda</div>
-      <h2 class="section-title">Kako <em>deluje</em><br>joga obraza?</h2>
-      <p style="font-size:0.9rem;line-height:1.78;color:var(--siva);max-width:340px;margin-bottom:2rem;">Obraz ima 43 mišic — in nobene ne vadimo. Joga obraza jih aktivira, masaža pa poskrbi za limfno drenažo in sijaj.</p>
-      <!-- Face zones SVG illustration -->
-      <svg viewBox="0 0 200 270" style="width:160px;" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="100" cy="145" rx="74" ry="98" fill="#FDF0F4" stroke="#F4C0D1" stroke-width="1.5"/>
-        <ellipse cx="78" cy="120" rx="20" ry="11" fill="#E8829A" opacity="0.18" stroke="#E8829A" stroke-width="1" stroke-dasharray="3,2"/>
-        <ellipse cx="122" cy="120" rx="20" ry="11" fill="#E8829A" opacity="0.18" stroke="#E8829A" stroke-width="1" stroke-dasharray="3,2"/>
-        <text x="100" y="118" text-anchor="middle" font-size="8" fill="#C04070" font-family="DM Sans,sans-serif">oči</text>
-        <ellipse cx="68" cy="153" rx="18" ry="12" fill="#FAC775" opacity="0.22" stroke="#C9923A" stroke-width="1" stroke-dasharray="3,2"/>
-        <ellipse cx="132" cy="153" rx="18" ry="12" fill="#FAC775" opacity="0.22" stroke="#C9923A" stroke-width="1" stroke-dasharray="3,2"/>
-        <text x="100" y="151" text-anchor="middle" font-size="8" fill="#8A6020" font-family="DM Sans,sans-serif">ličnice</text>
-        <path d="M68 195 Q100 213 132 195" fill="none" stroke="#9FE1CB" stroke-width="7" stroke-linecap="round" opacity="0.4"/>
-        <text x="100" y="205" text-anchor="middle" font-size="8" fill="#0F6E56" font-family="DM Sans,sans-serif">čeljust</text>
-        <rect x="72" y="92" width="56" height="16" rx="8" fill="#C5B8EC" opacity="0.28" stroke="#8B7ED4" stroke-width="1" stroke-dasharray="3,2"/>
-        <text x="100" y="104" text-anchor="middle" font-size="8" fill="#4A3AAA" font-family="DM Sans,sans-serif">čelo</text>
-      </svg>
-    </div>
-    <div class="kako-steps">
-      <div class="kako-step fade-in">
-        <div class="step-icon" style="background:var(--roza-bleda);">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 17 Q8 9 12 7 Q16 5 20 9 Q22 13 18 17 Q14 21 12 19 Q10 21 8 19 Q5 17 5 17Z" fill="#E8829A" opacity="0.25" stroke="#E8829A" stroke-width="1.5"/><path d="M9 14 Q12 10 15 12" stroke="#E8829A" stroke-width="2" stroke-linecap="round"/></svg>
-        </div>
-        <div class="step-body"><h3>Krepitev mišic obraza</h3><p>Okrepljene mišice podpirajo kožo od znotraj. Rezultat: naravni lifting brez igel.</p></div>
-      </div>
-      <div class="kako-step fade-in">
-        <div class="step-icon" style="background:#E1F5EE;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3 Q17 7 19 12 Q17 17 12 21 Q7 17 5 12 Q7 7 12 3Z" fill="#9FE1CB" opacity="0.3" stroke="#1D9E75" stroke-width="1.5"/><circle cx="12" cy="12" r="2.5" fill="#1D9E75" opacity="0.5"/></svg>
-        </div>
-        <div class="step-body"><h3>Limfna drenaža</h3><p>Masaža odvede zastalo tekočino — podočnjaki izginejo že po prvem tednu.</p></div>
-      </div>
-      <div class="kako-step fade-in">
-        <div class="step-icon" style="background:var(--zlata-bleda);">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="#FAC775" opacity="0.35" stroke="#C9923A" stroke-width="1.5"/><path d="M12 3 L12 6M12 18 L12 21M3 12 L6 12M18 12 L21 12" stroke="#C9923A" stroke-width="1.5" stroke-linecap="round"/></svg>
-        </div>
-        <div class="step-body"><h3>Cirkulacija & sijaj</h3><p>Večji pretok krvi pomeni zdravejšo, sijočo kožo — naravno in trajno.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- VAJE -->
-<section class="vaje-section" id="vaje">
-  <div class="vaje-intro">
-    <div class="fade-in">
-      <div class="section-tag">Program</div>
-      <h2 class="section-title">Brezplačne <em>vaje</em><br>za začetek</h2>
-    </div>
-    <div class="fade-in">
-      <div style="font-size:0.72rem;font-weight:500;color:var(--zlata);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1rem;">Tvoja dnevna rutina</div>
-      <div style="display:flex;flex-direction:column;gap:0.85rem;">
-        <div style="display:flex;align-items:center;gap:1rem;">
-          <div style="width:38px;height:38px;border-radius:50%;background:var(--roza-bleda);border:1px solid var(--roza-svetla);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">☀️</div>
-          <div><div style="font-size:0.85rem;font-weight:500;color:var(--temna);">Jutro — 5 min</div><div style="font-size:0.78rem;color:var(--siva);">Drenaža + tapkanje + "V" vaja</div></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:1rem;">
-          <div style="width:38px;height:38px;border-radius:50%;background:var(--zlata-bleda);border:1px solid var(--zlata-svetla);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">🌤️</div>
-          <div><div style="font-size:0.85rem;font-weight:500;color:var(--temna);">Podnevi — 3 min</div><div style="font-size:0.78rem;color:var(--siva);">Lifting ličnic + akupresura</div></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:1rem;">
-          <div style="width:38px;height:38px;border-radius:50%;background:#E1F5EE;border:1px solid #9FE1CB;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">🌙</div>
-          <div><div style="font-size:0.85rem;font-weight:500;color:var(--temna);">Večer — 10 min</div><div style="font-size:0.78rem;color:var(--siva);">Gua sha + sprostitvena masaža</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="vaje-grid">
-    <div class="vaja-card fade-in" onclick="openVaja(0)" style="cursor:pointer;">
-      <div class="vaja-icon icon-roza"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><ellipse cx="7" cy="10" rx="4" ry="3" fill="none" stroke="#E8829A" stroke-width="1.8"/><ellipse cx="17" cy="10" rx="4" ry="3" fill="none" stroke="#E8829A" stroke-width="1.8"/><path d="M3 14 Q12 18 21 14" fill="none" stroke="#E8829A" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-      <span class="vaja-badge badge-free">Brezplačno</span>
-      <h3>Tapkanje pod očmi</h3>
-      <p>Nežno tapkanje s prstancem od notranjega kotička navzven. Spodbudi cirkulacijo in zmanjša podočnjake.</p>
-      <div class="vaja-meta"><span>⏱ 3 × 30 sek</span><span>▶ Začni vajo</span></div>
-    </div>
-    <div class="vaja-card fade-in" onclick="openVaja(1)" style="cursor:pointer;">
-      <div class="vaja-icon icon-roza"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 12 Q8 6 12 8 Q16 6 20 12 Q16 18 12 16 Q8 18 4 12Z" fill="none" stroke="#E8829A" stroke-width="1.8"/><circle cx="12" cy="12" r="2" fill="#E8829A" opacity="0.5"/></svg></div>
-      <span class="vaja-badge badge-free">Brezplačno</span>
-      <h3>Limfna drenaža oči</h3>
-      <p>Drenažna masaža vzdolž kosti obraza. Odvede zastalo tekočino in zmanjša jutranjo oteklost.</p>
-      <div class="vaja-meta"><span>⏱ 2 × 45 sek</span><span>▶ Začni vajo</span></div>
-    </div>
-    <div class="vaja-card fade-in" onclick="openVaja(2)" style="cursor:pointer;">
-      <div class="vaja-icon icon-roza"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 15 L12 8 L17 15" fill="none" stroke="#E8829A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 18 Q12 21 19 18" fill="none" stroke="#E8829A" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-      <span class="vaja-badge badge-free">Brezplačno</span>
-      <h3>Vaja "V" za obrvi</h3>
-      <p>Dvigne veke in zmanjša utrujeni pogled. Krepi mišico orbicularis oculi za trdnost kože.</p>
-      <div class="vaja-meta"><span>⏱ 3 × 10 pon.</span><span>▶ Začni vajo</span></div>
-    </div>
-    <div class="vaja-card premium-card fade-in">
-      <div class="vaja-icon icon-zlata"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 17 Q12 10 19 17" fill="none" stroke="#C9923A" stroke-width="2" stroke-linecap="round"/><path d="M7 13 Q12 8 17 13" fill="none" stroke="#C9923A" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-      <span class="vaja-badge badge-premium">Premium</span>
-      <h3>Lifting ličnic</h3>
-      <p>Dvigne in napolni ličnice za mladosten videz. 21-dnevni program z napredovanjem.</p>
-      <div class="vaja-meta"><span>⏱ 3 × 10 pon.</span><span>🔒 Premium</span></div>
-      <div class="lock-overlay"><span style="font-size:1.4rem;">🔒</span><span>Dostopno s Premium</span></div>
-    </div>
-    <div class="vaja-card premium-card fade-in">
-      <div class="vaja-icon icon-zlata"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 8 Q8 4 12 5 Q16 4 19 8 Q20 13 17 16 Q14 20 12 19 Q10 20 7 16 Q4 13 5 8Z" fill="none" stroke="#C9923A" stroke-width="1.8"/><path d="M8 11 Q12 9 16 11" fill="none" stroke="#C9923A" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-      <span class="vaja-badge badge-premium">Premium</span>
-      <h3>Gua sha masaža</h3>
-      <p>Kitajska tehnika za konture obraza. Definiira čeljust in zmanjša nabrekanje.</p>
-      <div class="vaja-meta"><span>⏱ 5–10 min</span><span>🔒 Premium</span></div>
-      <div class="lock-overlay"><span style="font-size:1.4rem;">🔒</span><span>Dostopno s Premium</span></div>
-    </div>
-    <div class="vaja-card premium-card fade-in">
-      <div class="vaja-icon icon-zlata"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3 Q17 6 18 11 Q17 17 12 21 Q7 17 6 11 Q7 6 12 3Z" fill="none" stroke="#C9923A" stroke-width="1.8"/><path d="M9 12 Q12 10 15 12" fill="none" stroke="#C9923A" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-      <span class="vaja-badge badge-premium">Premium</span>
-      <h3>Vrat & podbradek</h3>
-      <p>Utrdi mišice vratu in prepreči povešeno kožo pod brado. Naravni lifting podbradka.</p>
-      <div class="vaja-meta"><span>⏱ 3 × 15 sek</span><span>🔒 Premium</span></div>
-      <div class="lock-overlay"><span style="font-size:1.4rem;">🔒</span><span>Dostopno s Premium</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- REZULTATI -->
-<section class="rezultati" id="rezultati">
-  <div class="rezultati-layout">
-    <div class="fade-in">
-      <div class="section-tag">Rezultati</div>
-      <h2 class="section-title">Kaj <em>pričakuješ</em><br>po redni vadbi?</h2>
-      <p style="font-size:0.9rem;line-height:1.78;color:var(--siva);max-width:340px;margin-bottom:2rem;">Vsaka vaja je zasnovana z namenom. Učinki se seštevajo — teden za tednom.</p>
-      <!-- Timeline -->
-      <svg viewBox="0 0 280 100" style="width:100%;max-width:280px;" xmlns="http://www.w3.org/2000/svg">
-        <line x1="20" y1="50" x2="260" y2="50" stroke="#F4C0D1" stroke-width="2"/>
-        <circle cx="20" cy="50" r="7" fill="#E8829A"/>
-        <circle cx="90" cy="50" r="7" fill="#E8829A" opacity="0.7"/>
-        <circle cx="170" cy="50" r="7" fill="#E8829A" opacity="0.5"/>
-        <circle cx="260" cy="50" r="7" fill="#C9923A"/>
-        <text x="20" y="70" text-anchor="middle" font-size="8.5" fill="#8A7070" font-family="DM Sans,sans-serif">1. teden</text>
-        <text x="90" y="70" text-anchor="middle" font-size="8.5" fill="#8A7070" font-family="DM Sans,sans-serif">2. teden</text>
-        <text x="170" y="70" text-anchor="middle" font-size="8.5" fill="#8A7070" font-family="DM Sans,sans-serif">4. teden</text>
-        <text x="260" y="70" text-anchor="middle" font-size="8.5" fill="#8A7070" font-family="DM Sans,sans-serif">6. teden</text>
-        <text x="20" y="34" text-anchor="middle" font-size="8" fill="#C04070" font-family="DM Sans,sans-serif">manj otekline</text>
-        <text x="90" y="34" text-anchor="middle" font-size="8" fill="#C04070" font-family="DM Sans,sans-serif">svežina</text>
-        <text x="170" y="34" text-anchor="middle" font-size="8" fill="#C04070" font-family="DM Sans,sans-serif">lifting</text>
-        <text x="260" y="34" text-anchor="middle" font-size="8" fill="#8A5E00" font-family="DM Sans,sans-serif">sprememba</text>
-      </svg>
-    </div>
-    <div class="rezultati-cards">
-      <div class="rezultat-card fade-in">
-        <div class="rez-icon" style="background:var(--roza-bleda);margin-bottom:0.85rem;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><ellipse cx="8" cy="11" rx="5" ry="4" fill="none" stroke="#E8829A" stroke-width="1.8"/><ellipse cx="18" cy="11" rx="5" ry="4" fill="none" stroke="#E8829A" stroke-width="1.8"/><path d="M5 17 Q13 21 21 17" fill="none" stroke="#E8829A" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-        <h3>Manj podočnjakov</h3>
-        <p>Limfna drenaža že v prvem tednu.</p>
-      </div>
-      <div class="rezultat-card fade-in">
-        <div class="rez-icon" style="background:var(--zlata-bleda);margin-bottom:0.85rem;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M13 3 Q19 7 21 13 Q19 19 13 23 Q7 19 5 13 Q7 7 13 3Z" fill="none" stroke="#C9923A" stroke-width="1.8"/><circle cx="13" cy="13" r="3" fill="#C9923A" opacity="0.4"/></svg></div>
-        <h3>Čvrstejša koža</h3>
-        <p>Okrepljene mišice po 4–6 tednih.</p>
-      </div>
-      <div class="rezultat-card fade-in">
-        <div class="rez-icon" style="background:#E1F5EE;margin-bottom:0.85rem;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="6" fill="none" stroke="#1D9E75" stroke-width="1.8"/><path d="M13 4 L13 8M13 18 L13 22M4 13 L8 13M18 13 L22 13" stroke="#1D9E75" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-        <h3>Naravni sijaj</h3>
-        <p>Boljša cirkulacija = zdrava koža.</p>
-      </div>
-      <div class="rezultat-card wide fade-in">
-        <div class="rez-icon" style="background:#EEEDFE;flex-shrink:0;"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M7 19 Q13 9 19 19" fill="none" stroke="#8B7ED4" stroke-width="2" stroke-linecap="round"/><path d="M9 15 Q13 12 17 15" fill="none" stroke="#8B7ED4" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-        <div><h3>Lifting brez posegov</h3><p>Definiranejše ličnice, dvignjene obrvi in jasnejša linija čeljusti — vse naravno, z lastnimi rokami.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING -->
-<section class="pricing" id="cenik">
-  <div class="pricing-deco"></div>
-  <div class="pricing-layout">
-    <div class="fade-in" style="position:relative;z-index:2;">
-      <div class="section-tag">Ceník</div>
-      <h2 class="section-title">Izberi <em>plan</em><br>zase</h2>
-      <p style="font-size:0.9rem;line-height:1.78;color:rgba(255,255,255,0.5);max-width:300px;margin-bottom:2rem;">Začni brezplačno. Nadgradi ko si pripravlješ — brez pogodb, odpoveš kdaj koli.</p>
-      <div style="display:flex;flex-direction:column;gap:0.7rem;">
-        <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.85rem;color:rgba(255,255,255,0.6);"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" stroke="#FAC775" stroke-width="1.2"/><path d="M5 9 L8 12 L13 6" stroke="#FAC775" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Nova vsebina vsak teden</div>
-        <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.85rem;color:rgba(255,255,255,0.6);"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" stroke="#FAC775" stroke-width="1.2"/><path d="M5 9 L8 12 L13 6" stroke="#FAC775" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Vgrajen timer za vsako vajo</div>
-        <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.85rem;color:rgba(255,255,255,0.6);"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" stroke="#FAC775" stroke-width="1.2"/><path d="M5 9 L8 12 L13 6" stroke="#FAC775" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Sledenje napredku</div>
-      </div>
-    </div>
-    <div class="pricing-grid fade-in" style="position:relative;z-index:2;">
-      <div class="plan plan-free">
-        <span class="plan-tag">Brezplačno</span>
-        <div class="plan-price">0 €</div>
-        <span class="plan-period">za vedno brezplačno</span>
-        <ul class="plan-features"><li>3 brezplačne vaje</li><li>Osnovna navodila</li><li>Brez registracije</li></ul>
-        <a href="#vaje" class="plan-btn">Začni zdaj</a>
-      </div>
-      <div class="plan plan-premium">
-        <span class="plan-tag">✦ Priporočeno</span>
-        <div class="plan-price">9 €</div>
-        <span class="plan-period">/ mesec · odpoveš kdaj koli</span>
-        <ul class="plan-features"><li>20+ vodenih vaj</li><li>Programi po namenu</li><li>Nova vsebina tedensko</li><li>Jutro & večer rutina</li><li>Timer & sledenje</li></ul>
-        <button class="plan-btn" onclick="alert('Kmalu na voljo! Pusti email za obvestilo.')">Postani Premium</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- MNENJA -->
-<section class="mnenja">
-  <div class="section-tag">Izkušnje</div>
-  <h2 class="section-title">Kaj pravijo <em>naše</em><br>uporabnice?</h2>
-  <div class="mnenja-grid">
-    <div class="mnenje fade-in">
-      <div class="zvezde">★★★★★</div>
-      <p class="mnenje-tekst">"Po treh tednih so se podočnjaki vidno zmanjšali. Prvič sem šla ven brez korektorja."</p>
-      <div class="mnenje-avtor"><div class="avtor-avatar" style="background:var(--roza);">M</div><div><span class="avtor-ime">Maja, 38 let</span><span class="avtor-info">Premium članica</span></div></div>
-    </div>
-    <div class="mnenje fade-in">
-      <div class="zvezde">★★★★★</div>
-      <p class="mnenje-tekst">"8 minut jutranje rutine in moj obraz izgleda za 5 let mlajši. Res deluje, ne morem verjeti."</p>
-      <div class="mnenje-avtor"><div class="avtor-avatar" style="background:var(--zlata);">A</div><div><span class="avtor-ime">Ana, 44 let</span><span class="avtor-info">Premium članica</span></div></div>
-    </div>
-    <div class="mnenje fade-in">
-      <div class="zvezde">★★★★★</div>
-      <p class="mnenje-tekst">"Gua sha masaža je spremenila moj obraz. Čeljust je definirana, koža napeta — vsako jutro 10 minut."</p>
-      <div class="mnenje-avtor"><div class="avtor-avatar" style="background:#9FE1CB;color:#085041;">T</div><div><span class="avtor-ime">Tanja, 51 let</span><span class="avtor-info">Premium članica</span></div></div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-banner">
-  <svg style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.45;pointer-events:none;" viewBox="0 0 1200 320" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="100" cy="80" r="70" fill="#F4C0D1" opacity="0.5"/>
-    <circle cx="1100" cy="220" r="90" fill="#FAE0A0" opacity="0.4"/>
-    <circle cx="600" cy="300" r="55" fill="#F4C0D1" opacity="0.3"/>
-    <circle cx="350" cy="40" r="40" fill="#FAC775" opacity="0.25"/>
-    <circle cx="900" cy="60" r="30" fill="#F4C0D1" opacity="0.35"/>
-  </svg>
-  <div style="position:relative;z-index:2;">
-    <h2>Tvoj obraz si zasluži<br><em>pet minut</em> na dan</h2>
-    <p>Začni z brezplačnimi vajami — brez registracije, takoj.</p>
-    <a href="#vaje" class="btn-primary">Začni zdaj →</a>
-  </div>
-</section>
-
-<!-- FAQ -->
-<section class="faq-wrap">
-  <div class="faq">
-    <div class="section-tag">Pogosta vprašanja</div>
-    <h2 class="section-title" style="max-width:100%;">Še <em>vprašanja?</em></h2>
-    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Kdaj bom videla prve rezultate?<span class="arrow">+</span></div><div class="faq-a">Za zmanjšanje otekanja in podočnjakov so rezultati vidni že po prvem tednu redne vadbe. Za čvrstost kože in lifting potrebuješ 4–6 tednov. Ključna je rednost — vsaj 5× na teden po 5–10 minut.</div></div>
-    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Ali potrebujem kakšne pripomočke?<span class="arrow">+</span></div><div class="faq-a">Za večino vaj ne potrebuješ ničesar — samo roke in malo kreme ali olja. Za gua sha masažo priporočamo kamen (kvarcov ali jadeitov), ki je dostopen za 10–20 €.</div></div>
-    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Ali je Premium naročnina zavezujoča?<span class="arrow">+</span></div><div class="faq-a">Ne — odpoveš jo lahko kadarkoli, brez pogodbenih obveznosti. Dostop do Premium vsebin ti ostane do konca plačanega meseca.</div></div>
-    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Za katero starost so vaje primerne?<span class="arrow">+</span></div><div class="faq-a">Vaje so primerne za ženske vseh starosti. Mlajše ženske jih uporabljajo preventivno, ženske po 35 za aktivni lifting, po 50 pa za obnovo čvrstosti.</div></div>
-    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Koliko časa na dan potrebujem?<span class="arrow">+</span></div><div class="faq-a">Osnovna rutina traja 5 minut. Celoten program je 15–20 minut. Priporočamo jutranjo rutino (5 min) + večerno masažo (10 min) za najboljše rezultate.</div></div>
-  </div>
-</section>
-
-<footer>
-  <div class="footer-logo">Lift <span>& Glow</span></div>
-  <p>© 2025 Lift & Glow · Vse pravice pridržane</p>
-  <div class="footer-links"><a href="#">Zasebnost</a><a href="#">Pogoji</a><a href="#">Kontakt</a></div>
-</footer>
-
-<!-- VAJA OVERLAY -->
-<div id="vajaOverlay" style="display:none;position:fixed;inset:0;z-index:1000;background:var(--krem);overflow-y:auto;">
-  <style>
-  .vo-nav{position:sticky;top:0;background:rgba(250,246,240,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(232,130,154,0.15);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;z-index:10;}
-  .vo-back{display:flex;align-items:center;gap:0.5rem;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--siva);cursor:pointer;transition:color 0.2s;padding:0;}
-  .vo-back:hover{color:var(--roza);}
-  .vo-logo{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--temna);}
-  .vo-logo span{color:var(--roza);font-style:italic;}
-  .vo-body{display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 60px);}
-  .vo-left{background:linear-gradient(160deg,var(--roza-bleda),var(--zlata-bleda));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;position:relative;overflow:hidden;}
-  .vo-avatar-area{width:100%;max-width:300px;position:relative;}
-  .vo-badge-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:var(--roza-mid);text-align:center;margin-top:1rem;}
-  .vo-tip{background:rgba(255,255,255,0.7);border-radius:1rem;padding:0.85rem 1.1rem;font-size:0.8rem;color:var(--siva);line-height:1.6;margin-top:1rem;max-width:300px;border:1px solid rgba(232,130,154,0.2);text-align:center;}
-  .vo-right{padding:3rem 3rem;display:flex;flex-direction:column;justify-content:center;}
-  .vo-tag{font-size:0.7rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--zlata);margin-bottom:0.5rem;}
-  .vo-title{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:300;color:var(--temna);line-height:1.15;margin-bottom:0.5rem;}
-  .vo-desc{font-size:0.9rem;color:var(--siva);line-height:1.7;margin-bottom:2rem;}
-
-  /* TIMER */
-  .timer-wrap{background:var(--bela);border-radius:1.5rem;padding:1.75rem;box-shadow:0 4px 24px rgba(232,130,154,0.1);margin-bottom:1.5rem;}
-  .timer-display{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
-  .timer-num{font-family:'Cormorant Garamond',serif;font-size:4rem;font-weight:300;color:var(--temna);line-height:1;font-variant-numeric:tabular-nums;}
-  .timer-info{text-align:right;}
-  .timer-round{font-size:0.78rem;color:var(--siva);display:block;}
-  .timer-label{font-size:0.85rem;font-weight:500;color:var(--roza);display:block;margin-top:0.2rem;}
-  .timer-bar-bg{height:6px;background:var(--roza-bleda);border-radius:3px;overflow:hidden;margin-bottom:1.25rem;}
-  .timer-bar-fill{height:100%;background:linear-gradient(90deg,var(--roza),var(--zlata-svetla));border-radius:3px;transition:width 1s linear;width:100%;}
-  .timer-btns{display:flex;gap:0.75rem;}
-  .tbtn{flex:1;padding:0.75rem;border-radius:2rem;border:none;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:500;cursor:pointer;transition:all 0.2s;}
-  .tbtn-play{background:var(--roza);color:var(--bela);}
-  .tbtn-play:hover{background:var(--roza-mid);}
-  .tbtn-reset{background:var(--krem);color:var(--siva);border:1px solid rgba(44,26,30,0.12);}
-  .tbtn-reset:hover{border-color:var(--roza);color:var(--roza);}
-  .tbtn-next{background:var(--zlata-bleda);color:var(--zlata);border:1px solid rgba(201,146,58,0.2);}
-  .tbtn-next:hover{background:var(--zlata-svetla);}
-
-  /* KORAKI */
-  .koraki-wrap{display:flex;flex-direction:column;gap:0.6rem;}
-  .korak-item{display:flex;gap:0.85rem;align-items:flex-start;padding:0.85rem 1rem;border-radius:1rem;background:var(--bela);border:1px solid rgba(232,130,154,0.08);transition:all 0.3s;}
-  .korak-item.active-step{border-color:var(--roza);background:var(--roza-bleda);}
-  .korak-item.done-step{opacity:0.5;}
-  .korak-n{width:24px;height:24px;border-radius:50%;background:var(--roza-bleda);color:var(--roza);font-size:0.75rem;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all 0.3s;}
-  .korak-item.active-step .korak-n{background:var(--roza);color:var(--bela);}
-  .korak-item.done-step .korak-n{background:#E8F5EE;color:#1A7045;}
-  .korak-t{font-size:0.85rem;color:var(--temna);line-height:1.55;}
-  .korak-item.done-step .korak-t{text-decoration:line-through;color:var(--siva);}
-
-  .vo-done{text-align:center;padding:2rem;display:none;}
-  .vo-done h3{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--temna);margin-bottom:0.5rem;}
-  .vo-done p{font-size:0.9rem;color:var(--siva);margin-bottom:1.5rem;}
-  .vo-done-icon{font-size:3rem;margin-bottom:1rem;display:block;}
-
-  @media(max-width:800px){
-    .vo-body{grid-template-columns:1fr;}
-    .vo-left{min-height:300px;padding:2rem 1.5rem;}
-    .vo-right{padding:1.5rem;}
-    .vo-avatar-area{max-width:200px;}
-    .timer-num{font-size:3rem;}
-  }
-  </style>
-
-  <div class="vo-nav">
-    <button class="vo-back" onclick="closeVaja()">← Nazaj na vaje</button>
-    <div class="vo-logo">Lift <span>& Glow</span></div>
-    <div style="width:100px;"></div>
-  </div>
-
-  <div class="vo-body">
-    <!-- LEVO: avatar -->
-    <div class="vo-left">
-      <div class="vo-avatar-area">
-        <svg viewBox="0 0 320 460" xmlns="http://www.w3.org/2000/svg" style="width:100%;filter:drop-shadow(0 16px 40px rgba(232,130,154,0.2));">
-          <defs>
-            <radialGradient id="vbg" cx="50%" cy="40%" r="55%"><stop offset="0%" stop-color="#FDF0F4"/><stop offset="100%" stop-color="#FDF8EC"/></radialGradient>
-            <radialGradient id="vskin" cx="50%" cy="35%" r="60%"><stop offset="0%" stop-color="#FDDBC8"/><stop offset="100%" stop-color="#F5C0A0"/></radialGradient>
-            <radialGradient id="vhair" cx="50%" cy="20%" r="60%"><stop offset="0%" stop-color="#5C3820"/><stop offset="100%" stop-color="#3A2010"/></radialGradient>
-          </defs>
-          <ellipse cx="160" cy="235" rx="145" ry="215" fill="url(#vbg)"/>
-          <rect x="135" y="295" width="50" height="55" rx="8" fill="#F5C0A0"/>
-          <path d="M40 410 Q160 360 280 410 L280 460 L40 460 Z" fill="#F4C0D1"/>
-          <path d="M40 410 Q160 372 280 410" fill="none" stroke="#E8829A" stroke-width="1.5" opacity="0.5"/>
-          <ellipse cx="160" cy="220" rx="86" ry="103" fill="url(#vskin)"/>
-          <ellipse cx="160" cy="148" rx="88" ry="78" fill="url(#vhair)"/>
-          <path d="M74 182 Q54 270 74 330 Q94 290 104 252 Z" fill="#3A2010"/>
-          <path d="M246 182 Q266 270 246 330 Q226 290 216 252 Z" fill="#3A2010"/>
-          <ellipse cx="75" cy="227" rx="9" ry="12" fill="#F0B090"/>
-          <ellipse cx="245" cy="227" rx="9" ry="12" fill="#F0B090"/>
-          <circle cx="75" cy="239" r="4" fill="#E8829A" opacity="0.8"/>
-          <circle cx="245" cy="239" r="4" fill="#E8829A" opacity="0.8"/>
-          <path d="M118 186 Q132 179 146 183" fill="none" stroke="#5C3820" stroke-width="2.3" stroke-linecap="round"/>
-          <path d="M174 183 Q188 179 202 186" fill="none" stroke="#5C3820" stroke-width="2.3" stroke-linecap="round"/>
-          <ellipse cx="132" cy="203" rx="14" ry="10" fill="#fff"/>
-          <circle cx="134" cy="204" r="7" fill="#5C3820"/>
-          <circle cx="134" cy="204" r="4" fill="#2C1A0E"/>
-          <circle cx="137" cy="201" r="2" fill="#fff"/>
-          <path d="M118 199 Q132 192 146 199" fill="none" stroke="#5C3820" stroke-width="1.4" stroke-linecap="round"/>
-          <ellipse cx="188" cy="203" rx="14" ry="10" fill="#fff"/>
-          <circle cx="190" cy="204" r="7" fill="#5C3820"/>
-          <circle cx="190" cy="204" r="4" fill="#2C1A0E"/>
-          <circle cx="193" cy="201" r="2" fill="#fff"/>
-          <path d="M174 199 Q188 192 202 199" fill="none" stroke="#5C3820" stroke-width="1.4" stroke-linecap="round"/>
-          <path d="M155 212 Q152 235 149 242 Q156 248 160 246 Q164 248 171 242 Q168 235 165 212" fill="none" stroke="#D09070" stroke-width="1.4" stroke-linecap="round" opacity="0.6"/>
-          <!-- Animated smile -->
-          <path id="voMouth" d="M140 265 Q160 280 180 265" fill="none" stroke="#C06070" stroke-width="2.3" stroke-linecap="round"/>
-          <ellipse cx="112" cy="245" rx="17" ry="9" fill="#F4A0B0" opacity="0.32"/>
-          <ellipse cx="208" cy="245" rx="17" ry="9" fill="#F4A0B0" opacity="0.32"/>
-          <!-- Animated hand -->
-          <g id="voHand">
-            <path d="M62 298 Q76 274 90 260 Q98 255 102 262 Q108 250 114 258 Q120 246 126 255 Q132 262 128 272 Q120 282 110 288 Q100 298 88 308 Q74 316 62 308 Z" fill="#FDDBC8" stroke="#E0B090" stroke-width="0.8"/>
-            <line x1="102" y1="262" x2="95" y2="284" stroke="#D0A080" stroke-width="0.8" opacity="0.5"/>
-            <line x1="114" y1="258" x2="108" y2="281" stroke="#D0A080" stroke-width="0.8" opacity="0.5"/>
-            <line x1="126" y1="255" x2="121" y2="278" stroke="#D0A080" stroke-width="0.8" opacity="0.5"/>
-          </g>
-          <!-- Sparkles -->
-          <circle cx="96" cy="172" r="3" fill="#FAC775" opacity="0.8"><animate attributeName="opacity" values="0.8;0.2;0.8" dur="2.5s" repeatCount="indefinite"/></circle>
-          <circle cx="228" cy="158" r="2.5" fill="#F4C0D1" opacity="0.9"><animate attributeName="opacity" values="0.9;0.2;0.9" dur="3s" repeatCount="indefinite" begin="0.5s"/></circle>
-          <circle cx="248" cy="278" r="2" fill="#E8829A" opacity="0.7"><animate attributeName="opacity" values="0.7;0.1;0.7" dur="2s" repeatCount="indefinite" begin="1s"/></circle>
-          <!-- Animated massage arcs -->
-          <path d="M106 230 Q116 225 126 230" fill="none" stroke="#E8829A" stroke-width="2" stroke-linecap="round"><animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/></path>
-          <path d="M194 230 Q204 225 214 230" fill="none" stroke="#E8829A" stroke-width="2" stroke-linecap="round"><animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="0.5s"/></path>
-          <!-- Breathing animation on face -->
-          <ellipse cx="160" cy="220" rx="86" ry="103" fill="none" stroke="rgba(232,130,154,0.2)" stroke-width="3"><animate attributeName="ry" values="103;106;103" dur="4s" repeatCount="indefinite"/></ellipse>
-          <rect x="76" y="428" width="168" height="26" rx="13" fill="rgba(232,130,154,0.15)" stroke="rgba(232,130,154,0.3)" stroke-width="1"/>
-          <text x="160" y="445" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="12" fill="#C04070" font-style="italic">tvoja AI inštruktorica</text>
-        </svg>
-      </div>
-      <div class="vo-badge-title" id="voAvatarMsg">Pripravi se — začenjamo!</div>
+      <div class="vo-avatar-msg" id="voAvatarMsg">Pripravi se — začenjamo!</div>
       <div class="vo-tip" id="voTip"></div>
     </div>
-
-    <!-- DESNO: timer + koraki -->
     <div class="vo-right">
       <div class="vo-tag" id="voTag"></div>
       <h1 class="vo-title" id="voTitle"></h1>
       <p class="vo-desc" id="voDesc"></p>
-
       <div class="timer-wrap">
         <div class="timer-display">
           <div class="timer-num" id="timerNum">0:30</div>
@@ -680,324 +757,461 @@ footer p{font-size:0.78rem;color:rgba(255,255,255,0.38);}
             <span class="timer-label" id="timerLabel">Pripravi se</span>
           </div>
         </div>
-        <div class="timer-bar-bg"><div class="timer-bar-fill" id="timerFill"></div></div>
+        <div class="timer-bar-bg"><div class="timer-bar-fill" id="timerFill" style="width:100%"></div></div>
         <div class="timer-btns">
           <button class="tbtn tbtn-play" id="timerPlayBtn" onclick="toggleTimer()">▶ Začni</button>
           <button class="tbtn tbtn-reset" onclick="resetTimer()">↺ Ponovi</button>
           <button class="tbtn tbtn-next" onclick="nextRound()">→ Naprej</button>
         </div>
       </div>
-
       <div class="koraki-wrap" id="voKoraki"></div>
-      <div class="vo-done" id="voDone">
-        <span class="vo-done-icon">✨</span>
+      <div class="vo-done hidden" id="voDone">
+        <div style="font-size:2.5rem;margin-bottom:0.75rem;">✨</div>
         <h3>Odlično!</h3>
-        <p id="voDoneMsg"></p>
-        <button class="tbtn tbtn-play" style="max-width:200px;margin:0 auto;" onclick="closeVaja()">← Nazaj na vaje</button>
+        <p id="voDoneMsg" style="font-size:0.88rem;color:var(--siva);margin:0.5rem 0 1.25rem;"></p>
+        <button class="btn btn-primary" onclick="closeVaja()">← Nazaj na vaje</button>
       </div>
     </div>
   </div>
 </div>
 
+<!-- TOAST -->
+<div id="toast"></div>
+
 <script>
-const VAJE=[
-  {
-    tag:'Področje oči · Brezplačno',
-    title:'Tapkanje pod očmi',
-    desc:'Nežno tapkanje s prstancem od notranjega kotička navzven. Spodbudi cirkulacijo in zmanjša podočnjake.',
-    tip:'💡 Zjutraj pred kremo — hladni prsti okrepijo učinek.',
-    avatarMsg:'Pripravi se — sledite korak za korakom.',
-    serije:3,
-    doneMsg:'Naredile ste 3 serije tapkanja. Cirkulacija je aktivirana!',
-    koraki:[
-      'Nanesite kapljico lahke kreme ali olja pod oči.',
-      'S konicama prstancev se postavite pri notranjem kotičku očesa.',
-      'Nežno tapkajte navzven vzdolž kosti pod očmi do senčnice.',
-      'Pritisk lahkoten — kot tipkanje po tipkovnici. Tapkajte 30 sekund.',
-    ],
-    korakSec:[0, 5, 30, 0],
-    korakMsg:[
-      'Najprej nanesite kremo ali olje — to zaščiti kožo.',
-      'Prstanec — to je prstan brez prstana — postavite k notranjemu kotičku.',
-      'Tapkajte ritmično navzven... odlično, nadaljujte!',
-      'Serija je zaključena! Spočijte roke in se pripravite na naslednjo.'
-    ]
-  },
-  {
-    tag:'Limfna drenaža · Brezplačno',
-    title:'Limfna drenaža oči',
-    desc:'Drenažna masaža vzdolž kosti obraza. Odvede zastalo tekočino in zmanjša jutranjo oteklost.',
-    tip:'💡 Vedno masirajtee navzdol — limfa se drenira k vratu.',
-    avatarMsg:'Dihajte globoko med masažo.',
-    serije:2,
-    doneMsg:'Limfna drenaža zaključena. Oteklina se bo zmanjšala v 10 minutah.',
-    koraki:[
-      'Prstanec postavite na notranji kotič obrvi.',
-      'Nežno drsite navzven po obrvi do senčnice — 15 sekund.',
-      'Pri senčnici naredite 3 majhne krožne gibe.',
-      'Spustite vzdolž kosti ličnice navzven.',
-      'Potegnite navzdol po vratu — limfa se drenira tja.',
-    ],
-    korakSec:[4, 15, 8, 8, 6],
-    korakMsg:[
-      'Prstanec nežno na notranji kotič obrvi — ne pritiskajte pretrdo.',
-      'Drsite počasi... čutite rahlo napetost pod kožo.',
-      'Tri krožne gibe pri senčnici — počasi in z nadzorom.',
-      'Spuščajte se vzdolž kosti ličnice navzdol...',
-      'Navzdol po vratu — tu se limfa odteče. Odlično!'
-    ]
-  },
-  {
-    tag:'Lifting oči · Brezplačno',
-    title:'Vaja "V" za obrvi',
-    desc:'Dvigne veke in zmanjša utrujeni pogled. Krepi mišico orbicularis oculi.',
-    tip:'💡 Čutiti morate napetost pri vekah — to je znak da delate prav.',
-    avatarMsg:'Počasi in z nadzorom — ne hitite.',
-    serije:3,
-    doneMsg:'Mišica orbicularis oculi je aktivirana. Nadaljujte vsak dan!',
-    koraki:[
-      'Kazalca in sredinec postavite v obliki V na zunanje kotičke oči.',
-      'Nežno pritiskajte navzgor in navzven — 5 sekund.',
-      'Poglejte navzgor, oči ostanejo odprte.',
-      'Počasi mežikajte spodnje veke navzgor — 10-krat počasi.',
-      'Sprostite in počivajte 5 sekund.',
-    ],
-    korakSec:[5, 5, 3, 15, 5],
-    korakMsg:[
-      'Prste v obliko V — pritisk naj bo nežen, ne boleč.',
-      'Čutite rahlo napetost v kotičkih oči? Odlično!',
-      'Pogled navzgor — mišica se aktivira.',
-      'Mežikajte počasi navzgor... počasi... odlično!',
-      'Sprostite se — pripravite na naslednjo serijo.'
-    ]
+const SUPA_URL='https://fxdvodwfjohrmpu rbjwk.supabase.co'.replace(' ','');
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4ZHZvZHdmam9ocm1wdXJiandrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4Nzk4MTUsImV4cCI6MjA5NjQ1NTgxNX0.maFSerXaVk-BSXDdIhpGSZ5iLb0iEFLaLtfXZ1tcr7I';
+const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
+
+let curUser=null, curProfile=null;
+
+// ── INIT ──
+sb.auth.onAuthStateChange(async(event,session)=>{
+  if(session?.user){
+    curUser=session.user;
+    document.getElementById('authScreen').classList.add('hidden');
+    document.getElementById('appShell').classList.add('visible');
+    document.getElementById('navUser').textContent=curUser.email;
+    await naložiProfil();
+    initDates();
+    naložiDashboard();
+  } else {
+    curUser=null;
+    document.getElementById('authScreen').classList.remove('hidden');
+    document.getElementById('appShell').classList.remove('visible');
   }
+});
+
+function initDates(){
+  const d=new Date().toISOString().split('T')[0];
+  ['pDatum','tDatum','mDatum','pFilterDatum','tFilterDatum'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value=d;
+  });
+  document.getElementById('dashDatum').textContent=new Date().toLocaleDateString('sl-SI',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+// ── AUTH ──
+function switchAuth(t){
+  document.getElementById('loginForm').classList.toggle('hidden',t!=='login');
+  document.getElementById('registerForm').classList.toggle('hidden',t!=='register');
+  document.querySelectorAll('.auth-tab').forEach((b,i)=>b.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='register')));
+  document.getElementById('authMsg').classList.add('hidden');
+}
+
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value;
+  const pass=document.getElementById('loginPass').value;
+  const {error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error) showAuthMsg(error.message,'error');
+}
+
+async function doRegister(){
+  const email=document.getElementById('regEmail').value;
+  const pass=document.getElementById('regPass').value;
+  const ime=document.getElementById('regIme').value;
+  const {error}=await sb.auth.signUp({email,password:pass,options:{data:{ime}}});
+  if(error) showAuthMsg(error.message,'error');
+  else showAuthMsg('Registracija uspešna! Preveri email za potrditev.','success');
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+}
+
+function showAuthMsg(msg,type){
+  const el=document.getElementById('authMsg');
+  el.textContent=msg;
+  el.className='auth-msg '+type;
+  el.classList.remove('hidden');
+}
+
+// ── NAVIGATION ──
+function showPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.add('hidden'));
+  document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.remove('hidden');
+  document.querySelector(`[data-page="${p}"]`).classList.add('active');
+  if(p==='prehrana') naložiPrehrano();
+  if(p==='telovadba') naložiTelovadbo();
+  if(p==='napredek'){naložiMeritve();naložiTedenPovzetek();}
+  if(p==='joga') naložiVajeHistory();
+  if(p==='dashboard') naložiDashboard();
+}
+
+// ── PROFIL ──
+async function naložiProfil(){
+  if(!curUser) return;
+  const {data}=await sb.from('profiles').select('*').eq('id',curUser.id).single();
+  if(data){
+    curProfile=data;
+    ['ime','starost','visina_cm','teza_kg','ciljna_teza_kg'].forEach(f=>{
+      const id='pr'+f.charAt(0).toUpperCase()+f.slice(1).replace(/_([a-z])/g,(_,l)=>l.toUpperCase());
+      const mapped={'prIme':'prIme','prStarost':'prStarost','prVisina_cm':'prVisina','prTeza_kg':'prTeza','prCiljna_teza_kg':'prCiljTeza'};
+      const elId={'ime':'prIme','starost':'prStarost','visina_cm':'prVisina','teza_kg':'prTeza','ciljna_teza_kg':'prCiljTeza'}[f];
+      const el=document.getElementById(elId);
+      if(el&&data[f]) el.value=data[f];
+    });
+    if(data.spol) document.getElementById('prSpol').value=data.spol;
+    if(data.aktivnost) document.getElementById('prAktivnost').value=data.aktivnost;
+    if(data.cilj) document.getElementById('prCilj').value=data.cilj;
+    document.getElementById('dashIme').textContent=data.ime||curUser.email.split('@')[0];
+  }
+}
+
+async function shraniProfil(){
+  if(!curUser) return;
+  const data={
+    id:curUser.id,
+    ime:document.getElementById('prIme').value,
+    starost:parseInt(document.getElementById('prStarost').value)||null,
+    visina_cm:parseInt(document.getElementById('prVisina').value)||null,
+    teza_kg:parseFloat(document.getElementById('prTeza').value)||null,
+    spol:document.getElementById('prSpol').value,
+    aktivnost:document.getElementById('prAktivnost').value,
+    cilj:document.getElementById('prCilj').value,
+    ciljna_teza_kg:parseFloat(document.getElementById('prCiljTeza').value)||null,
+    updated_at:new Date().toISOString()
+  };
+  const {error}=await sb.from('profiles').upsert(data);
+  if(error) showToast('Napaka: '+error.message);
+  else{showToast('Profil shranjen! ✓');curProfile=data;document.getElementById('dashIme').textContent=data.ime||'';}
+}
+
+// ── BMR ──
+function izracunajBMR(){
+  const v=parseInt(document.getElementById('prVisina').value);
+  const t=parseFloat(document.getElementById('prTeza').value);
+  const s=parseInt(document.getElementById('prStarost').value);
+  const spol=document.getElementById('prSpol').value;
+  const akt=document.getElementById('prAktivnost').value;
+  const cilj=document.getElementById('prCilj').value;
+  if(!v||!t||!s){showToast('Vnesi višino, težo in starost!');return;}
+  const bmr=spol==='moski'?(10*t)+(6.25*v)-(5*s)+5:(10*t)+(6.25*v)-(5*s)-161;
+  const aktFak={sedentarno:1.2,nizko:1.375,zmerno:1.55,aktivno:1.725,zelo_aktivno:1.9}[akt]||1.55;
+  const tdee=Math.round(bmr*aktFak);
+  const ciljKal=cilj==='hujsanje'?tdee-500:cilj==='pridobivanje'?tdee+300:tdee;
+  document.getElementById('bmrVal').textContent=Math.round(bmr)+' kcal';
+  document.getElementById('tdeeVal').textContent=tdee+' kcal / dan';
+  document.getElementById('ciljKalInfo').textContent=cilj==='hujsanje'?`Priporočen vnos za hujšanje: ${ciljKal} kcal/dan (deficit 500 kcal)`:cilj==='pridobivanje'?`Priporočen vnos za rast mišic: ${ciljKal} kcal/dan (+300 kcal)`:(`Vzdrževanje teže: ${ciljKal} kcal/dan`);
+  document.getElementById('mBelj').textContent=Math.round(t*1.6)+'g';
+  document.getElementById('mOH').textContent=Math.round((ciljKal*0.45)/4)+'g';
+  document.getElementById('mMasc').textContent=Math.round((ciljKal*0.25)/9)+'g';
+  document.getElementById('bmrResult').classList.remove('hidden');
+}
+
+// ── MET KALORIJE ──
+const MET={hoja:{lahka:2.8,zmerna:3.5,intenzivna:4.5},hoja_hitra:{lahka:4.0,zmerna:4.5,intenzivna:5.5},tek:{lahka:7.0,zmerna:9.0,intenzivna:11.5},kolesarjenje:{lahka:4.0,zmerna:6.0,intenzivna:8.0},plavanje:{lahka:5.0,zmerna:7.0,intenzivna:9.8},fitnes:{lahka:3.5,zmerna:5.0,intenzivna:6.0},joga:{lahka:2.5,zmerna:3.0,intenzivna:3.5},ples:{lahka:3.0,zmerna:4.5,intenzivna:6.0},kolesarjenje_sobno:{lahka:4.0,zmerna:6.5,intenzivna:8.5},drugo:{lahka:3.0,zmerna:4.5,intenzivna:6.0}};
+
+function izracunajKalorije(){
+  const vrsta=document.getElementById('tVrsta').value;
+  const min=parseInt(document.getElementById('tTrajanje').value)||0;
+  const intenz=document.getElementById('tIntenz').value;
+  const teza=curProfile?.teza_kg||65;
+  if(!min) return document.getElementById('tKalIzracun').style.display='none';
+  const met=(MET[vrsta]||MET.drugo)[intenz]||4;
+  const kal=Math.round(met*teza*(min/60));
+  document.getElementById('tKalVal').textContent=kal;
+  document.getElementById('tKalIzracun').style.display='block';
+}
+
+// ── PREHRANA ──
+async function dodajObrok(){
+  if(!curUser) return;
+  const data={user_id:curUser.id,obrok:document.getElementById('pObrok').value,datum:document.getElementById('pDatum').value,naziv:document.getElementById('pNaziv').value,kalorije:parseInt(document.getElementById('pKal').value)||0,beljakovine_g:parseFloat(document.getElementById('pBelj').value)||0,ogljikovi_hidrati_g:parseFloat(document.getElementById('pOH').value)||0,mascobe_g:parseFloat(document.getElementById('pMasc').value)||0};
+  if(!data.naziv){showToast('Vnesi naziv obroka!');return;}
+  const {error}=await sb.from('prehrana').insert(data);
+  if(error) showToast('Napaka: '+error.message);
+  else{showToast('Obrok dodan! ✓');['pNaziv','pKal','pBelj','pOH','pMasc'].forEach(id=>document.getElementById(id).value='');naložiPrehrano();}
+}
+
+async function naložiPrehrano(){
+  if(!curUser) return;
+  const d=document.getElementById('pFilterDatum')?.value||new Date().toISOString().split('T')[0];
+  const {data}=await sb.from('prehrana').select('*').eq('user_id',curUser.id).eq('datum',d).order('created_at');
+  const tb=document.getElementById('prehranaTbody');
+  if(!data||!data.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--siva);padding:1.5rem;">Ni vnosov za ta dan</td></tr>';posodobiPrehranaStats(0,0,0,0);return;}
+  tb.innerHTML=data.map(r=>`<tr><td><span class="badge badge-roza">${r.obrok}</span></td><td>${r.naziv}</td><td>${r.kalorije}</td><td>${r.beljakovine_g}g</td><td>${r.ogljikovi_hidrati_g}g</td><td>${r.mascobe_g}g</td><td><button class="del-btn" onclick="izbrišiObrok('${r.id}')">✕</button></td></tr>`).join('');
+  const tot={k:data.reduce((s,r)=>s+r.kalorije,0),b:data.reduce((s,r)=>s+r.beljakovine_g,0),o:data.reduce((s,r)=>s+r.ogljikovi_hidrati_g,0),m:data.reduce((s,r)=>s+r.mascobe_g,0)};
+  document.getElementById('pSkupaj').innerHTML=`Skupaj: <strong>${tot.k} kcal</strong> · Belj: ${tot.b.toFixed(1)}g · OH: ${tot.o.toFixed(1)}g · Maš: ${tot.m.toFixed(1)}g`;
+  posodobiPrehranaStats(tot.k,tot.b,tot.o,tot.m);
+}
+
+function posodobiPrehranaStats(k,b,o,m){
+  const teza=curProfile?.teza_kg||65;
+  const maxB=Math.round(teza*1.6),maxO=200,maxM=60;
+  document.getElementById('kalRingNum').textContent=k;
+  const circ=201,off=circ-(circ*Math.min(k,2000)/2000);
+  document.getElementById('kalRing').style.strokeDashoffset=off;
+  document.getElementById('beljVal').textContent=b.toFixed(0);
+  document.getElementById('ohVal').textContent=o.toFixed(0);
+  document.getElementById('mascVal').textContent=m.toFixed(0);
+  document.getElementById('beljBar').style.width=Math.min(100,b/maxB*100)+'%';
+  document.getElementById('ohBar').style.width=Math.min(100,o/maxO*100)+'%';
+  document.getElementById('mascBar').style.width=Math.min(100,m/maxM*100)+'%';
+}
+
+async function izbrišiObrok(id){
+  await sb.from('prehrana').delete().eq('id',id);
+  naložiPrehrano();showToast('Vnos izbrisan');
+}
+
+// ── TELOVADBA ──
+async function dodajTelovadbo(){
+  if(!curUser) return;
+  const vrsta=document.getElementById('tVrsta').value;
+  const min=parseInt(document.getElementById('tTrajanje').value)||0;
+  const intenz=document.getElementById('tIntenz').value;
+  const teza=curProfile?.teza_kg||65;
+  const met=(MET[vrsta]||MET.drugo)[intenz]||4;
+  const kal=Math.round(met*teza*(min/60));
+  const data={user_id:curUser.id,datum:document.getElementById('tDatum').value,vrsta,trajanje_min:min,intenzivnost:intenz,kalorije_porabljene:kal,opomba:document.getElementById('tOpomba').value};
+  const {error}=await sb.from('telovadba').insert(data);
+  if(error) showToast('Napaka: '+error.message);
+  else{showToast(`Telovadba zabeležena! 🔥 ${kal} kcal`);['tTrajanje','tOpomba'].forEach(id=>document.getElementById(id).value='');document.getElementById('tKalIzracun').style.display='none';naložiTelovadbo();}
+}
+
+async function naložiTelovadbo(){
+  if(!curUser) return;
+  const d=document.getElementById('tFilterDatum')?.value||new Date().toISOString().split('T')[0];
+  const {data}=await sb.from('telovadba').select('*').eq('user_id',curUser.id).order('datum',{ascending:false}).limit(20);
+  const tb=document.getElementById('telovadbaList');
+  if(!data||!data.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--siva);padding:1.5rem;">Še ni zabeležene telovadbe</td></tr>';return;}
+  tb.innerHTML=data.map(r=>`<tr><td>${r.datum}</td><td>${r.vrsta}</td><td>${r.trajanje_min} min</td><td>${r.intenzivnost}</td><td><span class="badge badge-teal">🔥 ${r.kalorije_porabljene} kcal</span></td><td><button class="del-btn" onclick="izbrišiTelovadbo('${r.id}')">✕</button></td></tr>`).join('');
+}
+
+async function izbrišiTelovadbo(id){
+  await sb.from('telovadba').delete().eq('id',id);
+  naložiTelovadbo();showToast('Vnos izbrisan');
+}
+
+// ── NAPREDEK ──
+async function dodajMeritev(){
+  if(!curUser) return;
+  const data={user_id:curUser.id,datum:document.getElementById('mDatum').value,teza_kg:parseFloat(document.getElementById('mTeza').value)||null,pas_cm:parseFloat(document.getElementById('mPas').value)||null,boki_cm:parseFloat(document.getElementById('mBoki').value)||null};
+  const {error}=await sb.from('meritve').insert(data);
+  if(error) showToast('Napaka: '+error.message);
+  else{showToast('Meritev zabeležena! ✓');naložiMeritve();}
+}
+
+async function naložiMeritve(){
+  if(!curUser) return;
+  const {data}=await sb.from('meritve').select('*').eq('user_id',curUser.id).order('datum',{ascending:false}).limit(20);
+  const tb=document.getElementById('meritveList');
+  if(!data||!data.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--siva);padding:1.5rem;">Še ni meritev</td></tr>';return;}
+  tb.innerHTML=data.map(r=>`<tr><td>${r.datum}</td><td>${r.teza_kg||'—'}</td><td>${r.pas_cm||'—'}</td><td>${r.boki_cm||'—'}</td><td><button class="del-btn" onclick="izbrišiMeritev('${r.id}')">✕</button></td></tr>`).join('');
+}
+
+async function izbrišiMeritev(id){
+  await sb.from('meritve').delete().eq('id',id);
+  naložiMeritve();showToast('Meritev izbrisana');
+}
+
+async function naložiTedenPovzetek(){
+  if(!curUser) return;
+  const od=new Date();od.setDate(od.getDate()-7);
+  const odStr=od.toISOString().split('T')[0];
+  const [{data:preh},{data:tel},{data:vaje}]=await Promise.all([
+    sb.from('prehrana').select('kalorije').eq('user_id',curUser.id).gte('datum',odStr),
+    sb.from('telovadba').select('kalorije_porabljene,trajanje_min').eq('user_id',curUser.id).gte('datum',odStr),
+    sb.from('vaje_obraz').select('id').eq('user_id',curUser.id).gte('datum',odStr)
+  ]);
+  const skupKal=preh?.reduce((s,r)=>s+r.kalorije,0)||0;
+  const skupPok=tel?.reduce((s,r)=>s+r.kalorije_porabljene,0)||0;
+  const skupMin=tel?.reduce((s,r)=>s+r.trajanje_min,0)||0;
+  document.getElementById('tedenPovzetek').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+      <div style="background:var(--roza-bleda);border-radius:0.75rem;padding:0.75rem;text-align:center;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--temna);">${skupKal}</div>
+        <div style="font-size:0.75rem;color:var(--siva);">kcal zaužitih</div>
+      </div>
+      <div style="background:var(--teal-bleda);border-radius:0.75rem;padding:0.75rem;text-align:center;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--temna);">${skupPok}</div>
+        <div style="font-size:0.75rem;color:var(--siva);">kcal pokurjenih</div>
+      </div>
+      <div style="background:var(--vijola-bleda);border-radius:0.75rem;padding:0.75rem;text-align:center;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--temna);">${skupMin} min</div>
+        <div style="font-size:0.75rem;color:var(--siva);">telovadbe</div>
+      </div>
+      <div style="background:var(--zlata-bleda);border-radius:0.75rem;padding:0.75rem;text-align:center;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--temna);">${vaje?.length||0}</div>
+        <div style="font-size:0.75rem;color:var(--siva);">vaj obraza</div>
+      </div>
+    </div>
+    <div style="margin-top:0.75rem;font-size:0.82rem;color:var(--siva);background:var(--krem);border-radius:0.75rem;padding:0.75rem;">
+      Neto kalorije: <strong>${skupKal-skupPok} kcal</strong>
+      ${curProfile?.cilj==='hujsanje'?` · Cilj: deficit — ${skupKal-skupPok<0?'✓ odlično!':'še malo naprej!'}`:''}
+    </div>`;
+}
+
+// ── DASHBOARD ──
+async function naložiDashboard(){
+  if(!curUser) return;
+  const d=new Date().toISOString().split('T')[0];
+  const [{data:preh},{data:tel},{data:vaje}]=await Promise.all([
+    sb.from('prehrana').select('kalorije').eq('user_id',curUser.id).eq('datum',d),
+    sb.from('telovadba').select('kalorije_porabljene').eq('user_id',curUser.id).eq('datum',d),
+    sb.from('vaje_obraz').select('id').eq('user_id',curUser.id).eq('datum',d)
+  ]);
+  const kal=preh?.reduce((s,r)=>s+r.kalorije,0)||0;
+  const pok=tel?.reduce((s,r)=>s+r.kalorije_porabljene,0)||0;
+  const vajeN=vaje?.length||0;
+  document.getElementById('dKal').textContent=kal;
+  document.getElementById('dPokurjeno').textContent=pok;
+  document.getElementById('dVaje').textContent=vajeN;
+  document.getElementById('dDeficit').textContent=(kal-pok>0?'+':'')+(kal-pok);
+  if(curProfile?.teza_kg){
+    const bmr=curProfile.spol==='moski'?(10*curProfile.teza_kg)+(6.25*(curProfile.visina_cm||165))-(5*(curProfile.starost||35))+5:(10*curProfile.teza_kg)+(6.25*(curProfile.visina_cm||165))-(5*(curProfile.starost||35))-161;
+    const aktFak={sedentarno:1.2,nizko:1.375,zmerno:1.55,aktivno:1.725,zelo_aktivno:1.9}[curProfile.aktivnost]||1.55;
+    const tdee=Math.round(bmr*aktFak);
+    const ciljKal=curProfile.cilj==='hujsanje'?tdee-500:curProfile.cilj==='pridobivanje'?tdee+300:tdee;
+    document.getElementById('dKalBar').style.width=Math.min(100,kal/ciljKal*100)+'%';
+    document.getElementById('dPokBar').style.width=Math.min(100,pok/500*100)+'%';
+    document.getElementById('dVajeBar').style.width=Math.min(100,vajeN/3*100)+'%';
+    document.getElementById('dashCilji').innerHTML=`
+      <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.83rem;">
+        <div>🍽 Kalorije: <strong>${kal}</strong> / ${ciljKal} kcal ${kal<=ciljKal?'✓':''}</div>
+        <div>💪 Pokurjeno: <strong>${pok}</strong> kcal danes</div>
+        <div>🧘 Vaje obraza: <strong>${vajeN}</strong> / 3 danes</div>
+        <div style="margin-top:0.25rem;color:var(--siva);">Neto: ${kal-pok} kcal · Cilj: ${ciljKal} kcal</div>
+      </div>`;
+  }
+}
+
+// ── VAJE OBRAZA ──
+async function naložiVajeHistory(){
+  if(!curUser) return;
+  const {data}=await sb.from('vaje_obraz').select('*').eq('user_id',curUser.id).order('created_at',{ascending:false}).limit(15);
+  const tb=document.getElementById('vajeHistory');
+  if(!data||!data.length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--siva);padding:1.5rem;">Še ni opravljenih vaj</td></tr>';return;}
+  tb.innerHTML=data.map(r=>`<tr><td>${r.datum}</td><td>${r.vaja_naziv}</td><td>${r.serije}×</td><td>${r.trajanje_sek}s</td></tr>`).join('');
+}
+
+// ── VAJA OVERLAY ──
+const VAJE=[
+  {tag:'Področje oči · Brezplačno',title:'Tapkanje pod očmi',desc:'Nežno tapkanje s prstancem. Spodbudi cirkulacijo in zmanjša podočnjake.',tip:'💡 Zjutraj pred kremo — hladni prsti okrepijo učinek.',avatarMsg:'Sledite korak za korakom.',serije:3,doneMsg:'Naredile ste 3 serije tapkanja!',koraki:['Nanesite kapljico lahke kreme ali olja pod oči.','S konicama prstancev se postavite pri notranjem kotičku očesa.','Nežno tapkajte navzven vzdolž kosti pod očmi do senčnice — 30 sekund.','Sprostite in se pripravite na naslednjo serijo.'],korakSec:[0,5,30,0],korakMsg:['Najprej nanesite kremo — zaščiti kožo.','Prstanec k notranjemu kotičku.','Tapkajte ritmično navzven...','Serija zaključena! Pripravi se na naslednjo.']},
+  {tag:'Limfna drenaža · Brezplačno',title:'Limfna drenaža oči',desc:'Drenažna masaža vzdolž kosti obraza. Odvede zastalo tekočino.',tip:'💡 Vedno masirajtee navzdol — limfa se drenira k vratu.',avatarMsg:'Dihajte globoko.',serije:2,doneMsg:'Limfna drenaža zaključena!',koraki:['Prstanec na notranji kotič obrvi.','Drsite navzven po obrvi do senčnice — 15 sekund.','Pri senčnici 3 majhne krožne gibe — 8 sekund.','Spustite vzdolž ličnice navzdol po vratu.'],korakSec:[4,15,8,6],korakMsg:['Prstanec nežno na notranji kotič obrvi.','Drsite počasi...','Trije krožni gibi pri senčnici...','Navzdol po vratu — limfa se odteče.']},
+  {tag:'Lifting oči · Brezplačno',title:'Vaja "V" za obrvi',desc:'Dvigne veke in zmanjša utrujeni pogled.',tip:'💡 Čutiti morate napetost — to je znak da delate prav.',avatarMsg:'Počasi in z nadzorom.',serije:3,doneMsg:'Odlično! Mišica je aktivirana.',koraki:['Prste v V obliko na kotičke oči — 5 sekund.','Pritiskajte navzgor in navzven.','Poglejte navzgor, oči odprte.','Mežikajte spodnje veke navzgor 10-krat — 15 sekund.','Sprostite — 5 sekund.'],korakSec:[5,5,3,15,5],korakMsg:['Prste v obliko V — pritisk nežen.','Čutite napetost v kotičkih oči?','Pogled navzgor — mišica se aktivira.','Mežikajte počasi navzgor...','Sprostite se.']}
 ];
 
-// ── SOUND ──
-let audioCtx = null;
-function initAudio(){
-  if(!audioCtx){
-    const AC=window.AudioContext||window.webkitAudioContext;
-    if(!AC) return;
-    audioCtx=new AC();
-  }
-  if(audioCtx.state==='suspended') audioCtx.resume();
-}
-function beep(freq=520,dur=0.15,vol=0.3,type='sine'){
-  try{
-    if(!audioCtx) return;
-    if(audioCtx.state==='suspended') audioCtx.resume();
-    const osc=audioCtx.createOscillator();
-    const gain=audioCtx.createGain();
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.type=type; osc.frequency.setValueAtTime(freq,audioCtx.currentTime);
-    gain.gain.setValueAtTime(vol,audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);
-    osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime+dur+0.05);
-  }catch(e){}
-}
-function beepStep(){ beep(700,0.1,0.3); }
-function beepSerija(){ beep(520,0.13,0.3); setTimeout(()=>beep(660,0.13,0.3),170); }
-function beepDone(){ beep(523,0.15,0.3); setTimeout(()=>beep(659,0.15,0.3),190); setTimeout(()=>beep(784,0.3,0.32),390); }
-function beepTick(){ beep(440,0.07,0.15); }
-
-// ── STATE ──
-let curVaja=0, curSerija=0, curKorak=0, timerSec=0, timerTotal=0, timerRunning=false, timerInterval=null;
-
-// Vsak korak ima lasten čas v sekundah (0 = takoj naprej brez timerja)
-// Format: { text, sec }  — sec=0 pomeni "prep" korak brez odštevanja
-function buildKoraki(v){
-  // Pripravi korake — zadnji korak vsake vaje je "tapkaj X sekund"
-  // porazdelimo sekunde samo na korake, ki imajo čas
-  return v.koraki.map((k,i)=>({
-    text: k,
-    sec: k.step_sec || v.korakSec[i] || 0
-  }));
-}
+let curVaja=0,curSerija=0,curKorak=0,timerSec=0,timerTotal=0,timerRunning=false,timerInterval=null;
 
 function openVaja(idx){
-  initAudio();
-  curVaja=idx; curSerija=0; curKorak=0; timerRunning=false;
+  curVaja=idx;curSerija=0;curKorak=0;timerRunning=false;
   clearInterval(timerInterval);
   const v=VAJE[idx];
-  document.getElementById('voTag').textContent=v.tag;
-  document.getElementById('voTitle').textContent=v.title;
-  document.getElementById('voDesc').textContent=v.desc;
-  document.getElementById('voTip').textContent=v.tip;
-  document.getElementById('voAvatarMsg').textContent=v.avatarMsg;
-  document.getElementById('voDone').style.display='none';
+  ['voTag','voTitle','voDesc','voTip','voAvatarMsg'].forEach(id=>{
+    const map={voTag:v.tag,voTitle:v.title,voDesc:v.desc,voTip:v.tip,voAvatarMsg:v.avatarMsg};
+    document.getElementById(id).textContent=map[id];
+  });
+  document.getElementById('voDone').classList.add('hidden');
   document.getElementById('voKoraki').style.display='flex';
   document.getElementById('timerPlayBtn').textContent='▶ Začni';
-  renderKoraki(v, 0);
-  loadKorak(v, 0);
-  updateRound(v);
+  renderKoraki(v,0);loadKorak(v,0);updateRound(v);
   document.getElementById('vajaOverlay').style.display='block';
   document.body.style.overflow='hidden';
-  window.scrollTo(0,0);
 }
 
 function closeVaja(){
-  clearInterval(timerInterval); timerRunning=false;
+  clearInterval(timerInterval);timerRunning=false;
   document.getElementById('vajaOverlay').style.display='none';
   document.body.style.overflow='';
+  naložiVajeHistory();
+  naložiDashboard();
 }
 
-// Naloži korak — nastavi timer glede na čas tega koraka
-function loadKorak(v, ki){
+async function shranivVajo(v){
+  if(!curUser) return;
+  await sb.from('vaje_obraz').insert({user_id:curUser.id,datum:new Date().toISOString().split('T')[0],vaja_naziv:v.title,serije:v.serije,trajanje_sek:v.korakSec.reduce((s,n)=>s+n,0)*v.serije});
+}
+
+function loadKorak(v,ki){
   curKorak=ki;
-  const k=v.koraki[ki];
   const sec=v.korakSec[ki];
-  renderKoraki(v, ki);
-  // Posodobi avatar sporočilo
-  document.getElementById('voAvatarMsg').textContent = v.korakMsg[ki] || v.avatarMsg;
-  // Timer
-  if(sec>0){
-    timerSec=sec; timerTotal=sec;
-    updateTimerDisplay();
-    document.getElementById('timerLabel').textContent=k.length>40?k.substring(0,38)+'…':k;
-  } else {
-    // korak brez timerja — pokaži "→" in nadaljuj
-    timerSec=0; timerTotal=0;
-    document.getElementById('timerNum').textContent='→';
-    document.getElementById('timerFill').style.width='100%';
-    document.getElementById('timerLabel').textContent='Preberi in nadaljuj';
-  }
+  renderKoraki(v,ki);
+  document.getElementById('voAvatarMsg').textContent=v.korakMsg[ki]||v.avatarMsg;
+  if(sec>0){timerSec=sec;timerTotal=sec;updateTimerDisplay();document.getElementById('timerLabel').textContent=v.koraki[ki].substring(0,42);}
+  else{document.getElementById('timerNum').textContent='→';document.getElementById('timerFill').style.width='100%';document.getElementById('timerLabel').textContent='Preberi in nadaljuj';}
 }
 
-function renderKoraki(v, activeIdx){
-  const wrap=document.getElementById('voKoraki');
-  wrap.innerHTML=v.koraki.map((k,i)=>`
-    <div class="korak-item ${i===activeIdx?'active-step':i<activeIdx?'done-step':''}">
-      <div class="korak-n">${i<activeIdx?'✓':(i+1)}</div>
-      <div class="korak-t">${k}</div>
-    </div>`).join('');
-  // Scroll aktivni korak v view
-  setTimeout(()=>{
-    const active=wrap.querySelector('.active-step');
-    if(active) active.scrollIntoView({block:'nearest',behavior:'smooth'});
-  },80);
+function renderKoraki(v,ai){
+  document.getElementById('voKoraki').innerHTML=v.koraki.map((k,i)=>`<div class="korak-item ${i===ai?'active-step':i<ai?'done-step':''}"><div class="korak-n">${i<ai?'✓':(i+1)}</div><div class="korak-t">${k}</div></div>`).join('');
 }
 
 function updateTimerDisplay(){
-  const m=Math.floor(timerSec/60), s=timerSec%60;
+  const m=Math.floor(timerSec/60),s=timerSec%60;
   document.getElementById('timerNum').textContent=m+':'+(s<10?'0':'')+s;
-  const pct=timerTotal>0?(timerSec/timerTotal*100):0;
-  document.getElementById('timerFill').style.width=pct+'%';
+  document.getElementById('timerFill').style.width=(timerTotal>0?timerSec/timerTotal*100:0)+'%';
 }
 
-function updateRound(v){
-  document.getElementById('timerRound').textContent='Serija '+(curSerija+1)+' / '+v.serije;
-}
+function updateRound(v){document.getElementById('timerRound').textContent='Serija '+(curSerija+1)+' / '+v.serije;}
 
 function toggleTimer(){
-  initAudio();
   const v=VAJE[curVaja];
-  if(timerRunning){
-    clearInterval(timerInterval); timerRunning=false;
-    document.getElementById('timerPlayBtn').textContent='▶ Nadaljuj';
-    return;
-  }
-  // Korak brez timerja — samo pojdi naprej
-  if(v.korakSec[curKorak]===0){
-    advanceKorak(v); return;
-  }
-  timerRunning=true;
-  document.getElementById('timerPlayBtn').textContent='⏸ Pavza';
+  if(timerRunning){clearInterval(timerInterval);timerRunning=false;document.getElementById('timerPlayBtn').textContent='▶ Nadaljuj';return;}
+  if(v.korakSec[curKorak]===0){advanceKorak(v);return;}
+  timerRunning=true;document.getElementById('timerPlayBtn').textContent='⏸ Pavza';
   timerInterval=setInterval(()=>{
-    if(timerSec<=0){
-      clearInterval(timerInterval); timerRunning=false;
-      beepStep();
-      advanceKorak(v);
-    } else {
-      timerSec--;
-      updateTimerDisplay();
-      if(timerSec<=3 && timerSec>0) beepTick();
-    }
+    if(timerSec<=0){clearInterval(timerInterval);timerRunning=false;advanceKorak(v);}
+    else{timerSec--;updateTimerDisplay();}
   },1000);
 }
 
 function advanceKorak(v){
-  const nextK=curKorak+1;
-  if(nextK>=v.koraki.length){
+  const next=curKorak+1;
+  if(next>=v.koraki.length){
     curSerija++;
-    if(curSerija>=v.serije){
-      finishVaja(v);
-    } else {
-      beepSerija();
-      curKorak=0;
-      updateRound(v);
-      loadKorak(v,0);
-      document.getElementById('timerPlayBtn').textContent='▶ Začni';
-      document.getElementById('voAvatarMsg').textContent='Odlično! '+curSerija+'. serija končana — pripravi se na naslednjo. 💪';
-    }
+    if(curSerija>=v.serije){finishVaja(v);}
+    else{curKorak=0;updateRound(v);loadKorak(v,0);document.getElementById('timerPlayBtn').textContent='▶ Začni';document.getElementById('voAvatarMsg').textContent='Serija '+curSerija+' končana! 💪';}
   } else {
-    beepStep();
-    loadKorak(v, nextK);
-    if(v.korakSec[nextK]>0 && timerRunning===false){
-      setTimeout(()=>{
-        document.getElementById('timerPlayBtn').textContent='⏸ Pavza';
-        timerRunning=true;
-        timerInterval=setInterval(()=>{
-          if(timerSec<=0){
-            clearInterval(timerInterval); timerRunning=false;
-            beepStep();
-            advanceKorak(v);
-          } else {
-            timerSec--;
-            updateTimerDisplay();
-            if(timerSec<=3 && timerSec>0) beepTick();
-          }
-        },1000);
-      },800);
+    loadKorak(v,next);
+    if(v.korakSec[next]>0){
+      setTimeout(()=>{timerRunning=true;document.getElementById('timerPlayBtn').textContent='⏸ Pavza';
+        timerInterval=setInterval(()=>{if(timerSec<=0){clearInterval(timerInterval);timerRunning=false;advanceKorak(v);}else{timerSec--;updateTimerDisplay();}},1000);},800);
     }
   }
 }
 
-function resetTimer(){
-  clearInterval(timerInterval); timerRunning=false;
-  const v=VAJE[curVaja];
-  curKorak=0; curSerija=0;
-  updateRound(v);
-  loadKorak(v,0);
-  document.getElementById('timerPlayBtn').textContent='▶ Začni';
-  document.getElementById('voAvatarMsg').textContent=v.avatarMsg;
-}
+function resetTimer(){clearInterval(timerInterval);timerRunning=false;const v=VAJE[curVaja];curKorak=0;curSerija=0;updateRound(v);loadKorak(v,0);document.getElementById('timerPlayBtn').textContent='▶ Začni';}
+function nextRound(){clearInterval(timerInterval);timerRunning=false;const v=VAJE[curVaja];curSerija++;if(curSerija>=v.serije){finishVaja(v);return;}curKorak=0;updateRound(v);loadKorak(v,0);document.getElementById('timerPlayBtn').textContent='▶ Začni';}
 
-function nextRound(){
-  clearInterval(timerInterval); timerRunning=false;
-  const v=VAJE[curVaja];
-  curSerija++;
-  if(curSerija>=v.serije){ finishVaja(v); return; }
-  curKorak=0;
-  updateRound(v);
-  loadKorak(v,0);
-  document.getElementById('timerPlayBtn').textContent='▶ Začni';
-  document.getElementById('voAvatarMsg').textContent='Serija '+(curSerija+1)+' — pripravi se!';
-}
-
-function finishVaja(v){
-  beepDone();
-  document.getElementById('voDone').style.display='block';
+async function finishVaja(v){
+  document.getElementById('voDone').classList.remove('hidden');
   document.getElementById('voKoraki').style.display='none';
   document.getElementById('voDoneMsg').textContent=v.doneMsg;
   document.getElementById('voAvatarMsg').textContent='Bravo! Vaja je zaključena. ✨';
   document.getElementById('timerNum').textContent='✓';
   document.getElementById('timerFill').style.width='0%';
-  document.getElementById('timerPlayBtn').textContent='▶ Začni';
+  await shranivVajo(v);
+  showToast('Vaja shranjena! ✨');
 }
 
-function toggleFaq(el){
-  const item=el.parentElement;
-  const isOpen=item.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
-  if(!isOpen)item.classList.add('open');
+// ── TOAST ──
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
 }
-const obs=new IntersectionObserver((entries)=>{
-  entries.forEach((e,i)=>{
-    if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*120);obs.unobserve(e.target);}
-  });
-},{threshold:0.1});
-document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
 </script>
 </body>
 </html>
