@@ -1141,10 +1141,20 @@ function openVideoPlayer(idx){
   document.getElementById('vpTag').textContent=v.tag;
   document.getElementById('vpTitle').textContent=v.title;
   document.getElementById('vpDesc').textContent=v.desc;
-  document.getElementById('vajaVideo').load();
+  const video=document.getElementById('vajaVideo');
+  video.load();
   document.getElementById('vajaVideoOverlay').style.display='flex';
   wrap.style.display='block';
   wrap.scrollIntoView({behavior:'smooth',block:'start'});
+  // Avtomatsko predvajaj po kratki pavzi
+  setTimeout(()=>{
+    video.play().then(()=>{
+      document.getElementById('vajaVideoOverlay').style.display='none';
+    }).catch(()=>{
+      // Brskalnik blokira autoplay — pokaži overlay
+      document.getElementById('vajaVideoOverlay').style.display='flex';
+    });
+  },500);
 }
 
 function playVajaVideo(){
