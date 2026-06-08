@@ -313,50 +313,171 @@ select.input{cursor:pointer;}
     <div class="page hidden" id="page-joga">
       <div class="section-hd">
         <div class="section-title">Joga <em>obraza</em></div>
-        <span class="badge badge-roza">3 brezplačne vaje</span>
+        <div style="display:flex;gap:0.5rem;">
+          <span class="badge badge-teal">3 brezplačne</span>
+          <span class="badge badge-zlata">6 premium</span>
+        </div>
       </div>
-      <div class="grid-3">
-        <div class="card" onclick="openVaja(0)" style="cursor:pointer;transition:transform 0.2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
+
+      <!-- VIDEO PLAYER -->
+      <div id="vajaVideoWrap" style="display:none;margin-bottom:1.25rem;">
+        <div class="card" style="padding:0;overflow:hidden;position:relative;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;">
+            <div style="position:relative;background:#1a0a0e;">
+              <video id="vajaVideo" controls playsinline style="width:100%;max-height:360px;display:block;object-fit:contain;">
+                <source id="vajaVideoSrc" src="" type="video/mp4">
+              </video>
+              <div id="vajaVideoOverlay" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(44,26,30,0.7);cursor:pointer;" onclick="playVajaVideo()">
+                <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;margin-bottom:0.75rem;">
+                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M8 5L17 11L8 17Z" fill="#E8829A"/></svg>
+                </div>
+                <div style="font-size:0.85rem;color:rgba(255,255,255,0.9);font-weight:500;">Oglej si demonstracijo</div>
+              </div>
+            </div>
+            <div style="padding:1.5rem;display:flex;flex-direction:column;justify-content:center;">
+              <div style="font-size:0.7rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--zlata);margin-bottom:0.4rem;" id="vpTag"></div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--temna);margin-bottom:0.5rem;" id="vpTitle"></div>
+              <div style="font-size:0.85rem;color:var(--siva);line-height:1.7;margin-bottom:1rem;" id="vpDesc"></div>
+              <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+                <button class="btn btn-primary btn-sm" onclick="openVaja(curVideoIdx)">▶ Začni vajo s timerjem</button>
+                <button class="btn btn-secondary btn-sm" onclick="closeVideoPlayer()">✕ Zapri</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BREZPLAČNE VAJE -->
+      <div style="font-size:0.72rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem;">
+        <span style="width:20px;height:1px;background:var(--teal);display:inline-block;"></span>
+        Brezplačne vaje
+      </div>
+      <div class="grid-3" style="margin-bottom:1.5rem;">
+        <div class="card" style="cursor:pointer;transition:transform 0.2s;border:1px solid rgba(29,158,117,0.15);" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
           <div style="font-size:1.5rem;margin-bottom:0.75rem;">👁️</div>
           <span class="badge badge-teal" style="margin-bottom:0.6rem;display:inline-block;">Brezplačno</span>
           <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Tapkanje pod očmi</div>
           <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Zmanjša podočnjake in otekanje. Idealno zjutraj.</div>
-          <div style="font-size:0.78rem;color:var(--siva);">⏱ 3 × 30 sek &nbsp;·&nbsp; ▶ Začni</div>
+          <div style="display:flex;gap:0.5rem;font-size:0.78rem;">
+            <button class="btn btn-secondary btn-sm" onclick="openVideoPlayer(0)">▶ Video</button>
+            <button class="btn btn-teal btn-sm" style="color:var(--bela);" onclick="openVaja(0)">Začni</button>
+          </div>
         </div>
-        <div class="card" onclick="openVaja(1)" style="cursor:pointer;transition:transform 0.2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
+        <div class="card" style="cursor:pointer;transition:transform 0.2s;border:1px solid rgba(29,158,117,0.15);" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
           <div style="font-size:1.5rem;margin-bottom:0.75rem;">🌀</div>
           <span class="badge badge-teal" style="margin-bottom:0.6rem;display:inline-block;">Brezplačno</span>
           <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Limfna drenaža oči</div>
           <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Odvede zastalo tekočino, svežina takoj.</div>
-          <div style="font-size:0.78rem;color:var(--siva);">⏱ 2 × 45 sek &nbsp;·&nbsp; ▶ Začni</div>
+          <div style="display:flex;gap:0.5rem;font-size:0.78rem;">
+            <button class="btn btn-secondary btn-sm" onclick="openVideoPlayer(1)">▶ Video</button>
+            <button class="btn btn-teal btn-sm" style="color:var(--bela);" onclick="openVaja(1)">Začni</button>
+          </div>
         </div>
-        <div class="card" onclick="openVaja(2)" style="cursor:pointer;transition:transform 0.2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
+        <div class="card" style="cursor:pointer;transition:transform 0.2s;border:1px solid rgba(29,158,117,0.15);" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
           <div style="font-size:1.5rem;margin-bottom:0.75rem;">⬆️</div>
           <span class="badge badge-teal" style="margin-bottom:0.6rem;display:inline-block;">Brezplačno</span>
           <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Vaja "V" za obrvi</div>
           <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Dvigne veke, zmanjša utrujeni pogled.</div>
-          <div style="font-size:0.78rem;color:var(--siva);">⏱ 3 × 20 sek &nbsp;·&nbsp; ▶ Začni</div>
+          <div style="display:flex;gap:0.5rem;font-size:0.78rem;">
+            <button class="btn btn-secondary btn-sm" onclick="openVideoPlayer(2)">▶ Video</button>
+            <button class="btn btn-teal btn-sm" style="color:var(--bela);" onclick="openVaja(2)">Začni</button>
+          </div>
         </div>
-        <div class="card" style="opacity:0.6;cursor:default;">
+      </div>
+
+      <!-- PREMIUM VAJE -->
+      <div style="font-size:0.72rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--zlata);margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem;">
+        <span style="width:20px;height:1px;background:var(--zlata);display:inline-block;"></span>
+        Premium vaje
+      </div>
+      <div class="grid-3" style="margin-bottom:1.25rem;">
+        <div class="card" style="position:relative;overflow:hidden;">
           <div style="font-size:1.5rem;margin-bottom:0.75rem;">😊</div>
           <span class="badge badge-zlata" style="margin-bottom:0.6rem;display:inline-block;">Premium</span>
           <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Lifting ličnic</div>
-          <div style="font-size:0.82rem;color:var(--siva);">Kmalu na voljo</div>
+          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Dvigne in napolni ličnice za mladosten videz.</div>
+          <div style="font-size:0.78rem;color:var(--siva);">⏱ 3 × 10 pon. &nbsp;·&nbsp; 🔒 Premium</div>
+          <div style="position:absolute;inset:0;background:rgba(250,246,240,0.85);display:flex;align-items:center;justify-content:center;border-radius:1.25rem;">
+            <div style="text-align:center;padding:1rem;">
+              <div style="font-size:1.5rem;margin-bottom:0.4rem;">🔒</div>
+              <div style="font-size:0.8rem;color:var(--siva);margin-bottom:0.75rem;">Dostopno s Premium</div>
+              <button class="btn btn-amber btn-sm" style="color:var(--bela);" onclick="showToast('Kmalu na voljo! 🌸')">Nadgradi</button>
+            </div>
+          </div>
         </div>
-        <div class="card" style="opacity:0.6;cursor:default;">
+        <div class="card" style="position:relative;overflow:hidden;">
           <div style="font-size:1.5rem;margin-bottom:0.75rem;">💆</div>
           <span class="badge badge-zlata" style="margin-bottom:0.6rem;display:inline-block;">Premium</span>
           <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Gua sha masaža</div>
-          <div style="font-size:0.82rem;color:var(--siva);">Kmalu na voljo</div>
+          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Kitajska tehnika za konture obraza.</div>
+          <div style="font-size:0.78rem;color:var(--siva);">⏱ 5–10 min &nbsp;·&nbsp; 🔒 Premium</div>
+          <div style="position:absolute;inset:0;background:rgba(250,246,240,0.85);display:flex;align-items:center;justify-content:center;border-radius:1.25rem;">
+            <div style="text-align:center;padding:1rem;">
+              <div style="font-size:1.5rem;margin-bottom:0.4rem;">🔒</div>
+              <div style="font-size:0.8rem;color:var(--siva);margin-bottom:0.75rem;">Dostopno s Premium</div>
+              <button class="btn btn-amber btn-sm" style="color:var(--bela);" onclick="showToast('Kmalu na voljo! 🌸')">Nadgradi</button>
+            </div>
+          </div>
         </div>
-        <div class="card" style="opacity:0.6;cursor:default;">
+        <div class="card" style="position:relative;overflow:hidden;">
           <div style="font-size:1.5rem;margin-bottom:0.75rem;">💪</div>
           <span class="badge badge-zlata" style="margin-bottom:0.6rem;display:inline-block;">Premium</span>
           <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Vrat & podbradek</div>
-          <div style="font-size:0.82rem;color:var(--siva);">Kmalu na voljo</div>
+          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Naravni lifting podbradka brez operacije.</div>
+          <div style="font-size:0.78rem;color:var(--siva);">⏱ 3 × 15 sek &nbsp;·&nbsp; 🔒 Premium</div>
+          <div style="position:absolute;inset:0;background:rgba(250,246,240,0.85);display:flex;align-items:center;justify-content:center;border-radius:1.25rem;">
+            <div style="text-align:center;padding:1rem;">
+              <div style="font-size:1.5rem;margin-bottom:0.4rem;">🔒</div>
+              <div style="font-size:0.8rem;color:var(--siva);margin-bottom:0.75rem;">Dostopno s Premium</div>
+              <button class="btn btn-amber btn-sm" style="color:var(--bela);" onclick="showToast('Kmalu na voljo! 🌸')">Nadgradi</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="position:relative;overflow:hidden;">
+          <div style="font-size:1.5rem;margin-bottom:0.75rem;">🦁</div>
+          <span class="badge badge-zlata" style="margin-bottom:0.6rem;display:inline-block;">Premium</span>
+          <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Levji dih</div>
+          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Sprosti napetost, raztegne mišice obraza.</div>
+          <div style="font-size:0.78rem;color:var(--siva);">⏱ 5 × 30 sek &nbsp;·&nbsp; 🔒 Premium</div>
+          <div style="position:absolute;inset:0;background:rgba(250,246,240,0.85);display:flex;align-items:center;justify-content:center;border-radius:1.25rem;">
+            <div style="text-align:center;padding:1rem;">
+              <div style="font-size:1.5rem;margin-bottom:0.4rem;">🔒</div>
+              <div style="font-size:0.8rem;color:var(--siva);margin-bottom:0.75rem;">Dostopno s Premium</div>
+              <button class="btn btn-amber btn-sm" style="color:var(--bela);" onclick="showToast('Kmalu na voljo! 🌸')">Nadgradi</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="position:relative;overflow:hidden;">
+          <div style="font-size:1.5rem;margin-bottom:0.75rem;">✨</div>
+          <span class="badge badge-zlata" style="margin-bottom:0.6rem;display:inline-block;">Premium</span>
+          <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Vaja "O" za usta</div>
+          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Aktivira mišice okoli ust, napolni ličnice.</div>
+          <div style="font-size:0.78rem;color:var(--siva);">⏱ 3 × 10 pon. &nbsp;·&nbsp; 🔒 Premium</div>
+          <div style="position:absolute;inset:0;background:rgba(250,246,240,0.85);display:flex;align-items:center;justify-content:center;border-radius:1.25rem;">
+            <div style="text-align:center;padding:1rem;">
+              <div style="font-size:1.5rem;margin-bottom:0.4rem;">🔒</div>
+              <div style="font-size:0.8rem;color:var(--siva);margin-bottom:0.75rem;">Dostopno s Premium</div>
+              <button class="btn btn-amber btn-sm" style="color:var(--bela);" onclick="showToast('Kmalu na voljo! 🌸')">Nadgradi</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="position:relative;overflow:hidden;">
+          <div style="font-size:1.5rem;margin-bottom:0.75rem;">🎯</div>
+          <span class="badge badge-zlata" style="margin-bottom:0.6rem;display:inline-block;">Premium</span>
+          <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Akupresurne točke</div>
+          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Pritisni točki za takojšnjo sprostitev oči.</div>
+          <div style="font-size:0.78rem;color:var(--siva);">⏱ 3 × 20 sek &nbsp;·&nbsp; 🔒 Premium</div>
+          <div style="position:absolute;inset:0;background:rgba(250,246,240,0.85);display:flex;align-items:center;justify-content:center;border-radius:1.25rem;">
+            <div style="text-align:center;padding:1rem;">
+              <div style="font-size:1.5rem;margin-bottom:0.4rem;">🔒</div>
+              <div style="font-size:0.8rem;color:var(--siva);margin-bottom:0.75rem;">Dostopno s Premium</div>
+              <button class="btn btn-amber btn-sm" style="color:var(--bela);" onclick="showToast('Kmalu na voljo! 🌸')">Nadgradi</button>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="card" style="margin-top:1.25rem;">
+
+      <div class="card" style="margin-top:0.25rem;">
         <div class="card-title">Zgodovina vaj</div>
         <div class="card-subtitle">Tvoje opravljene vaje</div>
         <table class="data-table">
@@ -997,6 +1118,46 @@ function izracunajKalorije(){
   const kal=Math.round(met*teza*(min/60));
   document.getElementById('tKalVal').textContent=kal;
   document.getElementById('tKalIzracun').style.display='block';
+}
+
+// ── VIDEO PLAYER ──
+let curVideoIdx=0;
+
+const VAJE_VIDEO=[
+  {url:'', tag:'Področje oči · Brezplačno', title:'Tapkanje pod očmi', desc:'Nežno tapkanje s prstancem od notranjega kotička navzven. Spodbudi cirkulacijo in zmanjša podočnjake.'},
+  {url:'CLOUDINARY_URL_LIMFNA_DRENAŽA', tag:'Limfna drenaža · Brezplačno', title:'Limfna drenaža oči', desc:'Drenažna masaža vzdolž kosti obraza. Odvede zastalo tekočino in zmanjša jutranjo oteklost.'},
+  {url:'', tag:'Lifting oči · Brezplačno', title:'Vaja "V" za obrvi', desc:'Dvigne veke in zmanjša utrujeni pogled. Krepi mišico orbicularis oculi.'}
+];
+
+function openVideoPlayer(idx){
+  curVideoIdx=idx;
+  const v=VAJE_VIDEO[idx];
+  const wrap=document.getElementById('vajaVideoWrap');
+  if(!v.url){
+    showToast('Video za to vajo kmalu na voljo! 🎬');
+    return;
+  }
+  document.getElementById('vajaVideoSrc').src=v.url;
+  document.getElementById('vpTag').textContent=v.tag;
+  document.getElementById('vpTitle').textContent=v.title;
+  document.getElementById('vpDesc').textContent=v.desc;
+  document.getElementById('vajaVideo').load();
+  document.getElementById('vajaVideoOverlay').style.display='flex';
+  wrap.style.display='block';
+  wrap.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function playVajaVideo(){
+  document.getElementById('vajaVideo').play();
+  document.getElementById('vajaVideoOverlay').style.display='none';
+}
+
+function closeVideoPlayer(){
+  const video=document.getElementById('vajaVideo');
+  video.pause();
+  video.currentTime=0;
+  document.getElementById('vajaVideoWrap').style.display='none';
+  document.getElementById('vajaVideoOverlay').style.display='flex';
 }
 
 // ── VNOS TABS ──
