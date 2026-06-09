@@ -964,9 +964,12 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     document.getElementById('authScreen').classList.add('hidden');
     document.getElementById('appShell').classList.add('visible');
     document.getElementById('navUser').textContent=curUser.email;
+    // Nastavi začetno stanje zgodovine
+    const startPage=window.location.hash.replace('#','')||'dashboard';
+    history.replaceState({page:startPage},'','#'+startPage);
     await naložiProfil();
     initDates();
-    naložiDashboard();
+    showPage(startPage, false);
   } else {
     curUser=null;
     document.getElementById('authScreen').classList.remove('hidden');
@@ -1029,7 +1032,9 @@ function showPage(p, addToHistory=true){
   if(pg){pg.classList.remove('hidden');pg.classList.add('active');}
   const tab=document.querySelector(`[data-page="${p}"]`);
   if(tab) tab.classList.add('active');
-  if(addToHistory) history.pushState({page:p}, '', '#'+p);
+  if(addToHistory){
+    history.pushState({page:p},'','#'+p);
+  }
   if(p==='prehrana') naložiPrehrano();
   if(p==='telovadba') naložiTelovadbo();
   if(p==='napredek'){naložiMeritve();naložiTedenPovzetek();}
@@ -1038,17 +1043,9 @@ function showPage(p, addToHistory=true){
 }
 
 // Brskalnik gumb nazaj/naprej
-window.addEventListener('popstate', (e)=>{
-  const p=e.state?.page || 'dashboard';
-  showPage(p, false);
-});
-
-// Ob zagonu preveri URL hash
-window.addEventListener('load', ()=>{
-  const hash=window.location.hash.replace('#','');
-  if(hash && document.getElementById('page-'+hash)){
-    showPage(hash, false);
-  }
+window.addEventListener('popstate',(e)=>{
+  const p=(e.state&&e.state.page)||'dashboard';
+  showPage(p,false);
 });
 
 // ── PROFIL ──
