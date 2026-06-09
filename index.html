@@ -269,6 +269,15 @@ select.input{cursor:pointer;}
         <div class="section-title">Dober dan, <em id="dashIme">ime</em> ✨</div>
         <div style="font-size:0.85rem;color:var(--siva);margin-top:0.25rem;" id="dashDatum"></div>
       </div>
+      <div id="onboardBanner" class="card hidden" style="background:linear-gradient(135deg,var(--roza-bleda),var(--zlata-bleda));border:1px solid rgba(232,130,154,0.25);margin-bottom:1.5rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+          <div style="flex:1;min-width:240px;">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--temna);margin-bottom:0.3rem;">Začnimo! ✨</div>
+            <div style="font-size:0.84rem;color:var(--siva);line-height:1.6;">Za prikaz tvojih dnevnih ciljev, kalorij in deficita najprej izpolni profil — vzame manj kot minuto.</div>
+          </div>
+          <button class="btn btn-primary" style="white-space:nowrap;" onclick="showPage('profil')">Izpolni profil →</button>
+        </div>
+      </div>
       <div class="grid-4" style="margin-bottom:1.5rem;">
         <div class="stat-card">
           <span class="stat-val" id="dKal">—</span>
@@ -390,12 +399,21 @@ select.input{cursor:pointer;}
         <span style="width:20px;height:1px;background:var(--zlata);display:inline-block;"></span>
         Premium vaje
       </div>
+      <div class="card" style="background:linear-gradient(135deg,var(--zlata-bleda),var(--roza-bleda));border:1px solid rgba(201,146,58,0.25);margin-bottom:1.25rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+          <div style="flex:1;min-width:240px;">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--temna);margin-bottom:0.35rem;">Odkleni vse vaje — <span style="color:var(--zlata);">9&nbsp;€/mesec</span></div>
+            <div style="font-size:0.83rem;color:var(--siva);line-height:1.7;">✓ 6+ premium vaj za ličnice, vrat in usta &nbsp;·&nbsp; ✓ vodene vaje z AI inštruktorico in timerjem &nbsp;·&nbsp; ✓ nove vaje vsak mesec &nbsp;·&nbsp; ✓ prekliči kadarkoli</div>
+          </div>
+          <button class="btn btn-amber" style="color:var(--bela);white-space:nowrap;" onclick="showToast('Premium kmalu na voljo — hvala za zanimanje! 🌸')">Nadgradi na Premium</button>
+        </div>
+      </div>
       <div class="grid-3" style="margin-bottom:1.25rem;">
         <div class="card" style="position:relative;overflow:hidden;">
           <div style="font-size:1.5rem;margin-bottom:0.75rem;">😊</div>
           <span class="badge badge-zlata" style="margin-bottom:0.6rem;display:inline-block;">Premium</span>
           <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Lifting ličnic</div>
-          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Dvigne in napolni ličnice za mladosten videz.</div>
+          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Krepi in tonira mišice ličnic za bolj svež, spočit videz.</div>
           <div style="font-size:0.78rem;color:var(--siva);">⏱ 3 × 10 pon. &nbsp;·&nbsp; 🔒 Premium</div>
           <div style="position:absolute;inset:0;background:rgba(250,246,240,0.85);display:flex;align-items:center;justify-content:center;border-radius:1.25rem;">
             <div style="text-align:center;padding:1rem;">
@@ -409,7 +427,7 @@ select.input{cursor:pointer;}
           <div style="font-size:1.5rem;margin-bottom:0.75rem;">💆</div>
           <span class="badge badge-zlata" style="margin-bottom:0.6rem;display:inline-block;">Premium</span>
           <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Gua sha masaža</div>
-          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Kitajska tehnika za konture obraza.</div>
+          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Kitajska tehnika masaže za sprostitev napetosti in boljšo prekrvavitev kontur.</div>
           <div style="font-size:0.78rem;color:var(--siva);">⏱ 5–10 min &nbsp;·&nbsp; 🔒 Premium</div>
           <div style="position:absolute;inset:0;background:rgba(250,246,240,0.85);display:flex;align-items:center;justify-content:center;border-radius:1.25rem;">
             <div style="text-align:center;padding:1rem;">
@@ -423,7 +441,7 @@ select.input{cursor:pointer;}
           <div style="font-size:1.5rem;margin-bottom:0.75rem;">💪</div>
           <span class="badge badge-zlata" style="margin-bottom:0.6rem;display:inline-block;">Premium</span>
           <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Vrat & podbradek</div>
-          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Naravni lifting podbradka brez operacije.</div>
+          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Krepi mišice vratu in podbradka, izboljša tonus in prekrvavitev.</div>
           <div style="font-size:0.78rem;color:var(--siva);">⏱ 3 × 15 sek &nbsp;·&nbsp; 🔒 Premium</div>
           <div style="position:absolute;inset:0;background:rgba(250,246,240,0.85);display:flex;align-items:center;justify-content:center;border-radius:1.25rem;">
             <div style="text-align:center;padding:1rem;">
@@ -451,7 +469,7 @@ select.input{cursor:pointer;}
           <div style="font-size:1.5rem;margin-bottom:0.75rem;">✨</div>
           <span class="badge badge-zlata" style="margin-bottom:0.6rem;display:inline-block;">Premium</span>
           <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Vaja "O" za usta</div>
-          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Aktivira mišice okoli ust, napolni ličnice.</div>
+          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Aktivira in tonira mišice okoli ust.</div>
           <div style="font-size:0.78rem;color:var(--siva);">⏱ 3 × 10 pon. &nbsp;·&nbsp; 🔒 Premium</div>
           <div style="position:absolute;inset:0;background:rgba(250,246,240,0.85);display:flex;align-items:center;justify-content:center;border-radius:1.25rem;">
             <div style="text-align:center;padding:1rem;">
@@ -465,7 +483,7 @@ select.input{cursor:pointer;}
           <div style="font-size:1.5rem;margin-bottom:0.75rem;">🎯</div>
           <span class="badge badge-zlata" style="margin-bottom:0.6rem;display:inline-block;">Premium</span>
           <div style="font-size:0.95rem;font-weight:500;color:var(--temna);margin-bottom:0.3rem;">Akupresurne točke</div>
-          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Pritisni točki za takojšnjo sprostitev oči.</div>
+          <div style="font-size:0.82rem;color:var(--siva);margin-bottom:0.75rem;">Nežen pritisk točk za sprostitev napetosti okoli oči.</div>
           <div style="font-size:0.78rem;color:var(--siva);">⏱ 3 × 20 sek &nbsp;·&nbsp; 🔒 Premium</div>
           <div style="position:absolute;inset:0;background:rgba(250,246,240,0.85);display:flex;align-items:center;justify-content:center;border-radius:1.25rem;">
             <div style="text-align:center;padding:1rem;">
@@ -475,6 +493,10 @@ select.input{cursor:pointer;}
             </div>
           </div>
         </div>
+      </div>
+
+      <div style="font-size:0.78rem;color:var(--siva);line-height:1.7;background:var(--krem);border-radius:0.75rem;padding:0.85rem 1rem;margin-bottom:1.25rem;">
+        Vaje za obraz podpirajo tonus, prekrvavitev in sprostitev napetosti. Rezultati so postopni in se razlikujejo med posamezniki; vaje ne nadomeščajo zdravstvenih ali estetskih posegov.
       </div>
 
       <div class="card" style="margin-top:0.25rem;">
@@ -533,6 +555,7 @@ select.input{cursor:pointer;}
                 <button class="btn btn-primary btn-sm" onclick="document.getElementById('fotoInput').click()">📷 Kamera</button>
                 <button class="btn btn-secondary btn-sm" onclick="document.getElementById('fotoGalerija').click()">🖼 Galerija</button>
               </div>
+              <div style="font-size:0.72rem;color:var(--siva);margin-top:0.6rem;line-height:1.5;">AI poda oceno kalorij in hranil — vrednosti pred shranjevanjem preveri in po potrebi popravi.</div>
               <div id="fotoPreview" style="display:none;margin-top:0.75rem;">
                 <img id="fotoImg" style="width:100%;max-height:160px;object-fit:cover;border-radius:0.5rem;margin-bottom:0.5rem;">
                 <div id="fotoStatus" style="font-size:0.8rem;color:var(--siva);text-align:center;"></div>
@@ -1485,6 +1508,9 @@ async function naložiTedenPovzetek(){
 // ── DASHBOARD ──
 async function naložiDashboard(){
   if(!curUser) return;
+  const profilOk=!!(curProfile&&curProfile.teza_kg);
+  const ob=document.getElementById('onboardBanner');
+  if(ob) ob.classList.toggle('hidden',profilOk);
   const d=new Date().toISOString().split('T')[0];
   const [{data:preh},{data:tel},{data:vaje}]=await Promise.all([
     sb.from('prehrana').select('kalorije').eq('user_id',curUser.id).eq('datum',d),
@@ -1528,7 +1554,7 @@ async function naložiVajeHistory(){
 // ── VAJA OVERLAY ──
 const VAJE=[
   {tag:'Področje oči · Brezplačno',title:'Tapkanje pod očmi',desc:'Nežno tapkanje s prstancem. Spodbudi cirkulacijo in zmanjša podočnjake.',tip:'💡 Zjutraj pred kremo — hladni prsti okrepijo učinek.',avatarMsg:'Sledite korak za korakom.',serije:3,doneMsg:'Naredile ste 3 serije tapkanja!',koraki:['Nanesite kapljico lahke kreme ali olja pod oči.','S konicama prstancev se postavite pri notranjem kotičku očesa.','Nežno tapkajte navzven vzdolž kosti pod očmi do senčnice — 30 sekund.','Sprostite in se pripravite na naslednjo serijo.'],korakSec:[0,5,30,0],korakMsg:['Najprej nanesite kremo — zaščiti kožo.','Prstanec k notranjemu kotičku.','Tapkajte ritmično navzven...','Serija zaključena! Pripravi se na naslednjo.']},
-  {tag:'Limfna drenaža · Brezplačno',title:'Limfna drenaža oči',desc:'Drenažna masaža vzdolž kosti obraza. Odvede zastalo tekočino.',tip:'💡 Vedno masirajtee navzdol — limfa se drenira k vratu.',avatarMsg:'Dihajte globoko.',serije:2,doneMsg:'Limfna drenaža zaključena!',koraki:['Prstanec na notranji kotič obrvi.','Drsite navzven po obrvi do senčnice — 15 sekund.','Pri senčnici 3 majhne krožne gibe — 8 sekund.','Spustite vzdolž ličnice navzdol po vratu.'],korakSec:[4,15,8,6],korakMsg:['Prstanec nežno na notranji kotič obrvi.','Drsite počasi...','Trije krožni gibi pri senčnici...','Navzdol po vratu — limfa se odteče.']},
+  {tag:'Limfna drenaža · Brezplačno',title:'Limfna drenaža oči',desc:'Drenažna masaža vzdolž kosti obraza. Odvede zastalo tekočino.',tip:'💡 Vedno masirajte navzdol — limfa se drenira k vratu.',avatarMsg:'Dihajte globoko.',serije:2,doneMsg:'Limfna drenaža zaključena!',koraki:['Prstanec na notranji kotič obrvi.','Drsite navzven po obrvi do senčnice — 15 sekund.','Pri senčnici 3 majhne krožne gibe — 8 sekund.','Spustite vzdolž ličnice navzdol po vratu.'],korakSec:[4,15,8,6],korakMsg:['Prstanec nežno na notranji kotič obrvi.','Drsite počasi...','Trije krožni gibi pri senčnici...','Navzdol po vratu — limfa se odteče.']},
   {tag:'Lifting oči · Brezplačno',title:'Vaja "V" za obrvi',desc:'Dvigne veke in zmanjša utrujeni pogled.',tip:'💡 Čutiti morate napetost — to je znak da delate prav.',avatarMsg:'Počasi in z nadzorom.',serije:3,doneMsg:'Odlično! Mišica je aktivirana.',koraki:['Prste v V obliko na kotičke oči — 5 sekund.','Pritiskajte navzgor in navzven.','Poglejte navzgor, oči odprte.','Mežikajte spodnje veke navzgor 10-krat — 15 sekund.','Sprostite — 5 sekund.'],korakSec:[5,5,3,15,5],korakMsg:['Prste v obliko V — pritisk nežen.','Čutite napetost v kotičkih oči?','Pogled navzgor — mišica se aktivira.','Mežikajte počasi navzgor...','Sprostite se.']}
 ];
 
