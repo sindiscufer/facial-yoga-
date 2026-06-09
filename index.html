@@ -16,6 +16,8 @@
   --vijola:#7F77DD;--vijola-bleda:#EEEDFE;
   --krem:#FAF6F0;--temna:#2C1A1E;--siva:#8A7070;--bela:#FFFFFF;
   --danger:#E24B4A;--danger-bleda:#FCEBEB;
+  --shadow-sm:0 1px 3px rgba(44,26,30,0.04),0 4px 12px rgba(232,130,154,0.06);
+  --shadow-md:0 4px 14px rgba(44,26,30,0.06),0 12px 32px rgba(232,130,154,0.10);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
@@ -67,7 +69,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--krem);color:var(--temna);
 .page.active{display:block;}
 
 /* ── CARDS ── */
-.card{background:var(--bela);border-radius:1.25rem;padding:1.5rem;border:1px solid rgba(232,130,154,0.1);}
+.card{background:var(--bela);border-radius:1.25rem;padding:1.5rem;border:1px solid rgba(232,130,154,0.1);box-shadow:var(--shadow-sm);transition:box-shadow 0.25s ease,transform 0.25s ease;}
 .card-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;color:var(--temna);margin-bottom:0.25rem;}
 .card-subtitle{font-size:0.82rem;color:var(--siva);margin-bottom:1.25rem;}
 
@@ -77,7 +79,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--krem);color:var(--temna);
 .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
 
 /* ── STAT CARDS ── */
-.stat-card{background:var(--bela);border-radius:1rem;padding:1.25rem;border:1px solid rgba(232,130,154,0.1);text-align:center;}
+.stat-card{background:var(--bela);border-radius:1rem;padding:1.25rem;border:1px solid rgba(232,130,154,0.1);text-align:center;box-shadow:var(--shadow-sm);transition:transform 0.25s ease,box-shadow 0.25s ease;}
+.stat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
 .stat-val{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:400;color:var(--temna);display:block;}
 .stat-lbl{font-size:0.75rem;color:var(--siva);display:block;margin-top:0.2rem;}
 .stat-bar{height:4px;background:var(--roza-bleda);border-radius:2px;margin-top:0.75rem;overflow:hidden;}
@@ -89,7 +92,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--krem);color:var(--temna);
 .section-title em{font-style:italic;color:var(--roza);}
 
 /* ── BUTTONS ── */
-.btn{padding:0.65rem 1.5rem;border-radius:2rem;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:500;cursor:pointer;transition:all 0.2s;border:none;}
+.btn{padding:0.65rem 1.5rem;border-radius:2rem;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:500;cursor:pointer;transition:all 0.2s;border:none;box-shadow:var(--shadow-sm);}
+.btn:active{transform:translateY(1px);}
+.btn-secondary{box-shadow:none;}
+:focus-visible{outline:2px solid var(--roza);outline-offset:2px;}
 .btn-primary{background:var(--roza);color:var(--bela);}
 .btn-primary:hover{background:var(--roza-mid);}
 .btn-secondary{background:transparent;color:var(--siva);border:1px solid rgba(44,26,30,0.15);}
@@ -190,9 +196,11 @@ select.input{cursor:pointer;}
 
 /* ── MOBILE ── */
 @media(max-width:800px){
-  .app-nav{padding:0.75rem 1rem;}
-  .nav-tabs{gap:0;}
-  .nav-tab{padding:0.4rem 0.6rem;font-size:0.75rem;}
+  .app-nav{padding:0.75rem 1rem;flex-wrap:wrap;gap:0.5rem;}
+  .nav-tabs{order:3;width:100%;gap:0.25rem;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;scrollbar-width:none;}
+  .nav-tabs::-webkit-scrollbar{display:none;}
+  .nav-tab{padding:0.45rem 0.7rem;font-size:0.78rem;white-space:nowrap;flex-shrink:0;}
+  .nav-user{display:none;}
   .app-content{padding:1rem;}
   .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}
   .form-row,.form-row-3{grid-template-columns:1fr;}
@@ -772,6 +780,19 @@ select.input{cursor:pointer;}
           <div id="tedenPovzetek" style="font-size:0.85rem;color:var(--siva);">Naloži podatke...</div>
         </div>
       </div>
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div class="section-hd" style="margin-bottom:0.75rem;align-items:flex-start;">
+          <div>
+            <div class="card-title">Fotografije obraza</div>
+            <div class="card-subtitle" style="margin-bottom:0;">Zasebno — vidiš samo ti. Za najboljšo primerjavo slikaj v enaki svetlobi in pozi.</div>
+          </div>
+          <button class="btn btn-vijola btn-sm" style="color:var(--bela);white-space:nowrap;" onclick="document.getElementById('obrazInput').click()">+ Dodaj</button>
+        </div>
+        <input type="file" id="obrazInput" accept="image/*" capture="user" style="display:none;" onchange="naložiObrazFoto(this)">
+        <div id="obrazCompare" style="display:none;margin-bottom:1.25rem;"></div>
+        <div id="obrazGalerija" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.75rem;"></div>
+      </div>
+
       <div class="card">
         <div class="card-title">Zgodovina meritev</div>
         <table class="data-table">
@@ -1060,7 +1081,7 @@ function showPage(p, addToHistory=true){
   }
   if(p==='prehrana') naložiPrehrano();
   if(p==='telovadba') naložiTelovadbo();
-  if(p==='napredek'){naložiMeritve();naložiTedenPovzetek();}
+  if(p==='napredek'){naložiMeritve();naložiTedenPovzetek();naložiObrazGalerija();}
   if(p==='joga') naložiVajeHistory();
   if(p==='dashboard') naložiDashboard();
 }
@@ -1312,30 +1333,14 @@ async function analizirajFoto(input){
   const mediaType=file.type||'image/jpeg';
 
   try {
-    const response=await fetch('https://api.anthropic.com/v1/messages',{
+    const response=await fetch(`${SUPA_URL}/functions/v1/analiziraj-obrok`,{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        messages:[{
-          role:'user',
-          content:[
-            {type:'image',source:{type:'base64',media_type:mediaType,data:base64}},
-            {type:'text',text:`Analiziraj to sliko hrane in vrni SAMO JSON objekt brez kakršnega koli besedila pred ali za njim. Format:
-{"naziv":"ime obroka v slovenščini","kalorije":število,"beljakovine":število,"oh":število,"mascobe":število}
-Vse vrednosti naj bodo za normalno porcijo (kar je na sliki). Kalorije in makri naj bodo cela števila.`}
-          ]
-        }]
-      })
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${SUPA_KEY}`},
+      body:JSON.stringify({image:base64,media_type:mediaType})
     });
 
-    const data=await response.json();
-    const text=data.content?.[0]?.text||'';
-
-    // Parsiraj JSON
-    const clean=text.replace(/```json|```/g,'').trim();
-    const result=JSON.parse(clean);
+    const result=await response.json();
+    if(!response.ok||result.error){throw new Error(result.error||'Napaka strežnika');}
 
     // Izpolni obrazec
     document.getElementById('pNaziv').value=result.naziv||'';
@@ -1367,7 +1372,7 @@ async function dodajObrok(){
   showToast('Shranjujem...');
   const {error}=await sb.from('prehrana').insert(data);
   if(error){showToast('Napaka: '+error.message);console.error('Supabase error:',error);}
-  else{showToast('Obrok dodan! ✓');['pNaziv','pKal','pBelj','pOH','pMasc'].forEach(id=>document.getElementById(id).value='');naložiPrehrano();}
+  else{showToast('Obrok dodan! ✓');['pNaziv','pKal','pBelj','pOH','pMasc'].forEach(id=>document.getElementById(id).value='');const fd=document.getElementById('pFilterDatum');if(fd)fd.value=document.getElementById('pDatum').value;naložiPrehrano();}
 }
 
 async function naložiPrehrano(){
@@ -1466,6 +1471,75 @@ async function naložiMeritve(){
 async function izbrišiMeritev(id){
   await sb.from('meritve').delete().eq('id',id);
   naložiMeritve();showToast('Meritev izbrisana');
+}
+
+// ── FOTOGRAFIJE OBRAZA ──
+const OBRAZ_BUCKET='obraz';
+
+async function naložiObrazFoto(input){
+  const file=input.files[0];
+  if(!file||!curUser) return;
+  showToast('Nalagam fotografijo...');
+  const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
+  const pot=`${curUser.id}/${Date.now()}.${ext}`;
+  const {error:upErr}=await sb.storage.from(OBRAZ_BUCKET).upload(pot,file,{upsert:false,contentType:file.type||'image/jpeg'});
+  if(upErr){showToast('Napaka pri nalaganju: '+upErr.message);console.error(upErr);input.value='';return;}
+  const {error:dbErr}=await sb.from('obraz_fotke').insert({user_id:curUser.id,datum:new Date().toISOString().split('T')[0],pot});
+  if(dbErr){showToast('Napaka pri shranjevanju: '+dbErr.message);console.error(dbErr);}
+  else{showToast('Fotografija dodana! ✨');}
+  input.value='';
+  naložiObrazGalerija();
+}
+
+async function naložiObrazGalerija(){
+  if(!curUser) return;
+  const gal=document.getElementById('obrazGalerija');
+  const cmp=document.getElementById('obrazCompare');
+  const {data,error}=await sb.from('obraz_fotke').select('*').eq('user_id',curUser.id).order('datum',{ascending:true}).order('created_at',{ascending:true});
+  if(error){gal.innerHTML=`<div style="color:var(--danger);font-size:0.82rem;">Napaka: ${error.message}</div>`;return;}
+  if(!data||!data.length){gal.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--siva);font-size:0.85rem;padding:1rem;">Še ni fotografij — dodaj prvo, da začneš spremljati napredek.</div>';cmp.style.display='none';return;}
+
+  // Podpisani URL-ji (bucket je zaseben)
+  const zUrl=await Promise.all(data.map(async r=>{
+    const {data:s}=await sb.storage.from(OBRAZ_BUCKET).createSignedUrl(r.pot,3600);
+    return {...r,url:s?.signedUrl||''};
+  }));
+
+  // Primerjava prej/potem
+  if(zUrl.length>=2){
+    const prva=zUrl[0],zadnja=zUrl[zUrl.length-1];
+    cmp.style.display='block';
+    cmp.innerHTML=`
+      <div style="font-size:0.72rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--vijola);margin-bottom:0.6rem;">Primerjava prej / potem</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+        <div style="text-align:center;">
+          <img src="${prva.url}" style="width:100%;border-radius:0.9rem;object-fit:cover;aspect-ratio:3/4;box-shadow:var(--shadow-sm);">
+          <div style="font-size:0.75rem;color:var(--siva);margin-top:0.4rem;">Prej · ${prva.datum}</div>
+        </div>
+        <div style="text-align:center;">
+          <img src="${zadnja.url}" style="width:100%;border-radius:0.9rem;object-fit:cover;aspect-ratio:3/4;box-shadow:var(--shadow-sm);">
+          <div style="font-size:0.75rem;color:var(--siva);margin-top:0.4rem;">Zdaj · ${zadnja.datum}</div>
+        </div>
+      </div>`;
+  } else {
+    cmp.style.display='none';
+  }
+
+  // Galerija vseh (najnovejše prve)
+  gal.innerHTML=[...zUrl].reverse().map(r=>`
+    <div style="position:relative;">
+      <img src="${r.url}" style="width:100%;border-radius:0.75rem;object-fit:cover;aspect-ratio:3/4;box-shadow:var(--shadow-sm);">
+      <div style="font-size:0.7rem;color:var(--siva);margin-top:0.3rem;text-align:center;">${r.datum}</div>
+      <button class="del-btn" style="position:absolute;top:0.3rem;right:0.3rem;background:rgba(255,255,255,0.85);border-radius:50%;width:24px;height:24px;line-height:1;" onclick="izbrišiObrazFoto('${r.id}','${r.pot}')">✕</button>
+    </div>`).join('');
+}
+
+async function izbrišiObrazFoto(id,pot){
+  if(!curUser) return;
+  await sb.storage.from(OBRAZ_BUCKET).remove([pot]);
+  await sb.from('obraz_fotke').delete().eq('id',id);
+  naložiObrazGalerija();
+  showToast('Fotografija izbrisana');
 }
 
 async function naložiTedenPovzetek(){
