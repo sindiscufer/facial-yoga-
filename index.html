@@ -1019,7 +1019,7 @@ function showAuthMsg(msg,type){
 }
 
 // ── NAVIGATION ──
-function showPage(p){
+function showPage(p, addToHistory=true){
   document.querySelectorAll('.page').forEach(el=>{
     el.classList.remove('active');
     el.classList.add('hidden');
@@ -1029,12 +1029,27 @@ function showPage(p){
   if(pg){pg.classList.remove('hidden');pg.classList.add('active');}
   const tab=document.querySelector(`[data-page="${p}"]`);
   if(tab) tab.classList.add('active');
+  if(addToHistory) history.pushState({page:p}, '', '#'+p);
   if(p==='prehrana') naložiPrehrano();
   if(p==='telovadba') naložiTelovadbo();
   if(p==='napredek'){naložiMeritve();naložiTedenPovzetek();}
   if(p==='joga') naložiVajeHistory();
   if(p==='dashboard') naložiDashboard();
 }
+
+// Brskalnik gumb nazaj/naprej
+window.addEventListener('popstate', (e)=>{
+  const p=e.state?.page || 'dashboard';
+  showPage(p, false);
+});
+
+// Ob zagonu preveri URL hash
+window.addEventListener('load', ()=>{
+  const hash=window.location.hash.replace('#','');
+  if(hash && document.getElementById('page-'+hash)){
+    showPage(hash, false);
+  }
+});
 
 // ── PROFIL ──
 async function naložiProfil(){
